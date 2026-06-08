@@ -156,9 +156,7 @@ export default function CoinPage() {
             )}
           </div>
 
-          <h1 className="text-2xl font-semibold tracking-tight mb-6" style={{ color: p.text }}>
-            {coin.name ?? `Güorld Coin #${coin.slug}`}
-          </h1>
+          <img src="/logo.png" alt="Güorld Coin" className="mb-6" style={{ width: 220, display: 'block' }} />
 
           <div className="flex items-end gap-8">
             <div>

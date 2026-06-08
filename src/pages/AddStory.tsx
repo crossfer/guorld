@@ -152,6 +152,7 @@ export default function AddStory() {
           >
             ← Coin #{slug}
           </Link>
+          <img src="/logo.png" alt="Güorld Coin" style={{ width: 220, display: 'block', marginBottom: 12 }} />
           <h1 className="text-xl font-semibold tracking-tight" style={{ color: p.text }}>
             Add your story
           </h1>
