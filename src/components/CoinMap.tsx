@@ -4,9 +4,8 @@ import 'leaflet/dist/leaflet.css'
 import { p } from '../lib/theme'
 import type { Entry } from '../types'
 
-const TILE_URL = 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png'
-const TILE_ATTRIBUTION =
-  '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+const TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
 
 function FitBounds({ points }: { points: [number, number][] }) {
   const map = useMap()
@@ -25,6 +24,14 @@ export function CoinMap({ entries }: { entries: Entry[] }) {
   const points: [number, number][] = entries
     .filter(e => e.lat != null && e.lng != null)
     .map(e => [e.lat!, e.lng!])
+
+  useEffect(() => {
+    console.log(
+      '[CoinMap] mounted — points:', points.length,
+      '| viewport:', window.innerWidth + 'x' + window.innerHeight,
+      '| userAgent:', navigator.userAgent,
+    )
+  }, [])
 
   return (
     <div style={{ height: '40vh', borderBottom: `1px solid ${p.borderMid}` }}>

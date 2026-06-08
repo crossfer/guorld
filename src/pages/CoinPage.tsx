@@ -1,4 +1,5 @@
-import { useEffect, useState, lazy, Suspense } from 'react'
+import { useEffect, useState, lazy, Suspense, Component } from 'react'
+import type { ReactNode, ErrorInfo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { p } from '../lib/theme'
@@ -7,6 +8,30 @@ import type { Coin, Entry } from '../types'
 const CoinMap = lazy(() =>
   import('../components/CoinMap').then(m => ({ default: m.CoinMap }))
 )
+
+class MapErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false }
+  static getDerivedStateFromError() { return { hasError: true } }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('[CoinMap] error boundary caught:', error, info)
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div
+          className="h-[40vh] flex items-center justify-center"
+          style={{ backgroundColor: p.bgMap, borderBottom: `1px solid ${p.borderMid}` }}
+        >
+          <p className="text-sm" style={{ color: p.textMuted }}>Map unavailable</p>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(iso))
@@ -181,21 +206,23 @@ export default function CoinPage() {
       </header>
 
       {/* Map */}
-      <Suspense
-        fallback={
-          <div
-            className="h-[40vh] flex items-center justify-center"
-            style={{ backgroundColor: p.bgMap, borderBottom: `1px solid ${p.borderMid}` }}
-          >
+      <MapErrorBoundary>
+        <Suspense
+          fallback={
             <div
-              className="w-5 h-5 rounded-full animate-spin"
-              style={{ border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent' }}
-            />
-          </div>
-        }
-      >
-        <CoinMap entries={entries} />
-      </Suspense>
+              className="h-[40vh] flex items-center justify-center"
+              style={{ backgroundColor: p.bgMap, borderBottom: `1px solid ${p.borderMid}` }}
+            >
+              <div
+                className="w-5 h-5 rounded-full animate-spin"
+                style={{ border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent' }}
+              />
+            </div>
+          }
+        >
+          <CoinMap entries={entries} />
+        </Suspense>
+      </MapErrorBoundary>
 
       {/* Story So Far */}
       {coin.story_so_far && (
