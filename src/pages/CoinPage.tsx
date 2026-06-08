@@ -8,66 +8,67 @@ function formatDate(iso: string) {
 }
 
 function formatKm(km: number) {
-  return km >= 1000
-    ? `${(km / 1000).toFixed(1)}k km`
-    : `${Math.round(km)} km`
-}
-
-function KeeperTag({ entry, index }: { entry: Entry; index: number }) {
-  const name = entry.keeper?.display_name ?? 'Anonymous'
-  const ig = entry.keeper?.instagram
-
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-xs font-mono text-amber-500 font-semibold">#{index + 1}</span>
-      <span className="font-medium text-gray-900">{name}</span>
-      {ig && (
-        <a
-          href={`https://instagram.com/${ig.replace('@', '')}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          @{ig.replace('@', '')}
-        </a>
-      )}
-    </div>
-  )
+  if (km === 0) return '0 km'
+  if (km >= 1000) return `${(km / 1000).toFixed(1)}k km`
+  return `${Math.round(km)} km`
 }
 
 function EntryCard({ entry, index, isLast }: { entry: Entry; index: number; isLast: boolean }) {
+  const name = entry.keeper?.display_name ?? 'Anonymous'
+  const ig = entry.keeper?.instagram?.replace('@', '')
+
   return (
     <div className="relative flex gap-4">
       {/* Timeline spine */}
-      <div className="flex flex-col items-center">
-        <div className="w-3 h-3 rounded-full bg-amber-400 ring-2 ring-amber-200 shrink-0 mt-1" />
-        {!isLast && <div className="w-px flex-1 bg-gray-200 mt-1" />}
+      <div className="flex flex-col items-center w-4 shrink-0 pt-1">
+        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 ring-4 ring-stone-950 z-10" />
+        {!isLast && <div className="w-px flex-1 bg-stone-800 mt-1" />}
       </div>
 
       {/* Card */}
-      <div className="pb-8 flex-1 min-w-0">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-2">
-          <KeeperTag entry={entry} index={index} />
-          <div className="flex items-center gap-3 text-xs text-gray-400">
-            {entry.location_name && <span>{entry.location_name}</span>}
-            <span>{formatDate(entry.created_at)}</span>
-            {entry.days_held != null && (
-              <span>{entry.days_held}d held</span>
+      <div className={`flex-1 min-w-0 ${isLast ? 'pb-4' : 'pb-8'}`}>
+        <div className="bg-stone-900 border border-stone-800 rounded-xl overflow-hidden">
+          {entry.photo_url && (
+            <img
+              src={entry.photo_url}
+              alt=""
+              className="w-full aspect-[4/3] object-cover"
+            />
+          )}
+
+          <div className="p-4">
+            <div className="flex items-baseline justify-between gap-2 mb-1">
+              <div className="flex items-baseline gap-2">
+                <span className="text-[11px] font-mono text-amber-400 tracking-widest">
+                  #{String(index + 1).padStart(2, '0')}
+                </span>
+                <span className="text-sm font-medium text-stone-100">{name}</span>
+              </div>
+              {ig && (
+                <a
+                  href={`https://instagram.com/${ig}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-stone-500 hover:text-stone-300 transition-colors shrink-0"
+                >
+                  @{ig}
+                </a>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-stone-500 mb-3">
+              {entry.location_name && <span>{entry.location_name}</span>}
+              <span>{formatDate(entry.created_at)}</span>
+              {entry.days_held != null && <span>{entry.days_held}d held</span>}
+            </div>
+
+            {entry.story && (
+              <p className="text-stone-300 text-sm leading-relaxed whitespace-pre-line">
+                {entry.story}
+              </p>
             )}
           </div>
         </div>
-
-        {entry.photo_url && (
-          <img
-            src={entry.photo_url}
-            alt={`Photo by ${entry.keeper?.display_name ?? 'keeper'}`}
-            className="w-full max-h-64 object-cover rounded-lg mb-3 bg-gray-100"
-          />
-        )}
-
-        {entry.story && (
-          <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">{entry.story}</p>
-        )}
       </div>
     </div>
   )
@@ -111,18 +112,22 @@ export default function CoinPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-stone-950 flex items-center justify-center">
+        <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
   if (notFound || !coin) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-2 text-gray-500">
-        <p className="text-lg font-medium text-gray-900">Coin not found</p>
-        <p className="text-sm">The coin <span className="font-mono">#{slug}</span> doesn't exist yet.</p>
-        <Link to="/" className="mt-4 text-sm text-amber-600 hover:underline">← Back to home</Link>
+      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center gap-2 px-6 text-center">
+        <p className="text-stone-100 font-medium text-lg">Coin not found</p>
+        <p className="text-stone-500 text-sm">
+          <span className="font-mono text-stone-400">#{slug}</span> doesn't exist or hasn't been activated yet.
+        </p>
+        <Link to="/" className="mt-5 text-xs text-amber-500 hover:text-amber-400 transition-colors">
+          ← Back to home
+        </Link>
       </div>
     )
   }
@@ -130,62 +135,93 @@ export default function CoinPage() {
   const keeperCount = entries.length
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-stone-950 text-stone-100">
+
       {/* Header */}
-      <header className="border-b border-gray-100 px-4 py-5">
+      <header className="px-5 pt-8 pb-6 border-b border-stone-800/60">
         <div className="max-w-xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-xs font-mono text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full">
-                  #{coin.slug}
-                </span>
-                {coin.is_active && (
-                  <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">active</span>
-                )}
-              </div>
-              <h1 className="text-xl font-semibold text-gray-900">{coin.name ?? `Coin #${coin.slug}`}</h1>
-            </div>
+
+          {/* Serial + status */}
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-[11px] font-mono tracking-[0.2em] text-amber-400 uppercase">
+              Coin #{coin.slug}
+            </span>
+            {coin.is_active && (
+              <span className="flex items-center gap-1.5 text-[11px] text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                active
+              </span>
+            )}
           </div>
 
+          {/* Name */}
+          <h1 className="text-2xl font-semibold tracking-tight text-stone-100 mb-6">
+            {coin.name ?? `Güorld Coin #${coin.slug}`}
+          </h1>
+
           {/* Stats */}
-          <div className="flex gap-6 mt-4 text-sm">
+          <div className="flex items-end gap-8">
             <div>
-              <div className="font-semibold text-gray-900">{formatKm(coin.total_km)}</div>
-              <div className="text-xs text-gray-400">traveled</div>
+              <div className="text-3xl font-bold tracking-tight text-stone-100 leading-none">
+                {formatKm(coin.total_km)}
+              </div>
+              <div className="text-[11px] text-stone-500 mt-1.5 uppercase tracking-widest">traveled</div>
             </div>
+            <div className="w-px h-8 bg-stone-800" />
             <div>
-              <div className="font-semibold text-gray-900">{keeperCount}</div>
-              <div className="text-xs text-gray-400">{keeperCount === 1 ? 'keeper' : 'keepers'}</div>
+              <div className="text-3xl font-bold tracking-tight text-stone-100 leading-none">
+                {keeperCount}
+              </div>
+              <div className="text-[11px] text-stone-500 mt-1.5 uppercase tracking-widest">
+                {keeperCount === 1 ? 'keeper' : 'keepers'}
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Map placeholder */}
-      <div className="bg-gray-50 border-b border-gray-100 h-48 flex items-center justify-center">
-        <span className="text-sm text-gray-400">Map coming soon</span>
+      {/* Map */}
+      <div
+        className="h-[40vh] border-b border-stone-800/60 flex items-center justify-center"
+        style={{
+          backgroundColor: '#0c0a09',
+          backgroundImage: 'radial-gradient(circle, #292524 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }}
+      >
+        <div className="text-center select-none">
+          <div className="text-stone-600 text-sm">Map coming soon</div>
+          <div className="text-stone-700 text-xs mt-1 font-mono">Leaflet / Mapbox</div>
+        </div>
       </div>
 
       {/* Story So Far */}
       {coin.story_so_far && (
-        <section className="px-4 py-6 border-b border-gray-100 bg-amber-50">
-          <div className="max-w-xl mx-auto">
-            <p className="text-xs font-medium text-amber-600 uppercase tracking-wide mb-2">Story so far</p>
-            <p className="text-sm text-gray-700 leading-relaxed italic">{coin.story_so_far}</p>
+        <section className="border-b border-stone-800/60">
+          <div className="max-w-xl mx-auto px-5 py-6">
+            <p className="text-[11px] font-mono text-amber-400 tracking-widest uppercase mb-3">
+              Story so far
+            </p>
+            <p className="text-stone-300 text-sm leading-relaxed italic border-l-2 border-amber-400/30 pl-4">
+              {coin.story_so_far}
+            </p>
           </div>
         </section>
       )}
 
       {/* Timeline */}
-      <main className="px-4 py-6 max-w-xl mx-auto">
+      <main className="max-w-xl mx-auto px-5 py-8">
         {entries.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            <p className="text-sm">No stories yet. This coin is just getting started.</p>
+          <div className="text-center py-20">
+            <div className="text-4xl mb-5">🌍</div>
+            <p className="text-stone-200 font-medium text-base mb-1">No stories yet.</p>
+            <p className="text-stone-500 text-sm">Be the first Keeper.</p>
           </div>
         ) : (
-          <div>
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-6">Journey</p>
+          <>
+            <p className="text-[11px] font-mono text-stone-600 tracking-widest uppercase mb-6">
+              Journey
+            </p>
             {entries.map((entry, i) => (
               <EntryCard
                 key={entry.id}
@@ -194,15 +230,16 @@ export default function CoinPage() {
                 isLast={i === entries.length - 1}
               />
             ))}
-          </div>
+          </>
         )}
 
         {/* Waitlist CTA */}
-        <div className="mt-10 pt-8 border-t border-gray-100 text-center">
-          <p className="text-sm text-gray-500 mb-3">
-            Want your own coin to start its journey?
+        <div className="mt-12 rounded-2xl border border-stone-800 bg-stone-900 p-7 text-center">
+          <p className="text-stone-100 font-semibold text-base mb-1">This coin travels free.</p>
+          <p className="text-stone-500 text-sm mb-6">
+            Get your own coin and start a story that outlives you.
           </p>
-          <button className="bg-amber-400 hover:bg-amber-500 text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors">
+          <button className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-stone-950 text-sm font-bold px-7 py-3 rounded-full transition-colors tracking-wide">
             Join the waitlist
           </button>
         </div>
