@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { p } from '../lib/theme'
 
@@ -26,6 +26,8 @@ const labelStyle = {
 export default function AddStory() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const writeToken = searchParams.get('token')
 
   const [displayName, setDisplayName] = useState('')
   const [instagram, setInstagram] = useState('')
@@ -116,6 +118,7 @@ export default function AddStory() {
           },
           body: JSON.stringify({
             slug,
+            write_token: writeToken,
             display_name: displayName.trim(),
             instagram: instagram.trim() || null,
             story: story.trim(),
@@ -137,6 +140,23 @@ export default function AddStory() {
       setError(err instanceof Error ? err.message : 'Something went wrong.')
       setSubmitting(false)
     }
+  }
+
+  if (!writeToken) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ backgroundColor: p.bg }}>
+        <div className="text-4xl mb-5">🪙</div>
+        <p className="font-semibold text-lg mb-2" style={{ color: p.text }}>
+          You need the physical coin
+        </p>
+        <p className="text-sm max-w-xs" style={{ color: p.textMuted }}>
+          To leave your story, tap the NFC tag on the coin. The link on the tag is the only way in.
+        </p>
+        <Link to={`/coin/${slug}`} className="mt-8 text-xs" style={{ color: p.amber }}>
+          ← View this coin's journey
+        </Link>
+      </div>
+    )
   }
 
   return (

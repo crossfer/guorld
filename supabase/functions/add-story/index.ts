@@ -112,21 +112,27 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body = await req.json()
-    const { slug, display_name, instagram, story, photo_url, lat, lng, location_name } = body
+    const { slug, write_token, display_name, instagram, story, photo_url, lat, lng, location_name } = body
 
     if (!slug || !display_name?.trim() || !story?.trim()) {
       return json({ error: 'slug, display_name, and story are required' }, 400)
     }
+    if (!write_token) {
+      return json({ error: 'Invalid token' }, 401)
+    }
 
-    // 1. Find coin
+    // 1. Find coin and validate write token in one query
     const { data: coin, error: coinError } = await supabase
       .from('coins')
-      .select('id, slug, total_km, is_active')
+      .select('id, slug, total_km, is_active, write_token')
       .eq('slug', slug)
       .single()
 
     if (coinError || !coin) {
       return json({ error: 'Coin not found' }, 404)
+    }
+    if (coin.write_token !== write_token) {
+      return json({ error: 'Invalid token' }, 401)
     }
     if (!coin.is_active) {
       return json({ error: 'This coin is no longer active' }, 403)
