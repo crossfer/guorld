@@ -105,12 +105,15 @@ function WaitlistCta() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    console.log('[waitlist] submit fired, email:', email)
     if (!email.trim()) return
     setState('loading')
     const { error } = await supabase.from('waitlist').insert({ email: email.trim() })
     if (error) {
+      console.error('[waitlist] insert error:', error)
       setState(error.code === '23505' ? 'duplicate' : 'error')
     } else {
+      console.log('[waitlist] insert success')
       setState('done')
     }
   }
