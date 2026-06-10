@@ -164,16 +164,16 @@ export default function CoinPage() {
     <div className="min-h-screen" style={{ backgroundColor: p.bg, color: p.text }}>
 
       {/* Header */}
-      <header className="px-5 pb-0 text-center" style={{ paddingTop: 16 }}>
+      <header className="px-5 pb-0 text-center" style={{ paddingTop: 8 }}>
         <div className="max-w-xl mx-auto">
           <img
             src="/logo.png"
             alt="Güorld Coin"
             className="mx-auto"
-            style={{ width: 260, display: 'block', marginBottom: 8 }}
+            style={{ width: 260, display: 'block', marginBottom: 4 }}
           />
 
-          {coin.name && (
+          {coin.name && !/^Güorld Coin #/i.test(coin.name) && (
             <div style={{ marginBottom: 10 }}>
               <div className="text-[11px] uppercase tracking-widest" style={{ color: p.textFaint }}>
                 Coin name
