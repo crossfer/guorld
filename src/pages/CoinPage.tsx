@@ -144,7 +144,7 @@ function WaitlistCta() {
               type="submit"
               disabled={state === 'loading'}
               className="rounded-full px-5 py-3 text-sm font-bold tracking-wide shrink-0 disabled:opacity-60"
-              style={{ backgroundColor: p.amberDot, color: '#fff' }}
+              style={{ backgroundColor: p.amberDot, color: '#fff', cursor: 'pointer' }}
             >
               {state === 'loading' ? '…' : 'Join'}
             </button>
