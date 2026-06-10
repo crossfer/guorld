@@ -2,7 +2,7 @@ import { useEffect, useState, lazy, Suspense, Component } from 'react'
 import type { ReactNode, ErrorInfo } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { p } from '../lib/theme'
+import { p, grain, playfair, crimson, mono } from '../lib/theme'
 import type { Entry, Keeper } from '../types'
 
 const GlobalMap = lazy(() =>
@@ -22,16 +22,44 @@ class MapErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div
-          className="flex items-center justify-center"
-          style={{ height: '50vh', backgroundColor: p.bgMap, borderBottom: `1px solid ${p.borderMid}` }}
-        >
-          <p className="text-sm" style={{ color: p.textMuted }}>Map unavailable</p>
+        <div style={{ height: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: p.bgMap, borderBottom: `1px solid ${p.borderMid}` }}>
+          <p style={{ color: p.textMuted, fontFamily: mono, fontSize: 12 }}>Map unavailable</p>
         </div>
       )
     }
     return this.props.children
   }
+}
+
+// ── Compass divider ──────────────────────────────────────────
+function CompassDivider() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '6px 0', opacity: 0.6 }}>
+      <div style={{ flex: 1, borderTop: `1px dashed ${p.borderMid}` }} />
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="2" fill={p.amber} />
+        <line x1="10" y1="1" x2="10" y2="7.5"  stroke={p.amber} strokeWidth="0.8" />
+        <line x1="10" y1="12.5" x2="10" y2="19" stroke={p.amber} strokeWidth="0.8" />
+        <line x1="1" y1="10" x2="7.5" y2="10"  stroke={p.amber} strokeWidth="0.8" />
+        <line x1="12.5" y1="10" x2="19" y2="10" stroke={p.amber} strokeWidth="0.8" />
+        <polygon points="10,1.5 11.3,6.5 10,8 8.7,6.5" fill={p.amberDot} opacity="0.9" />
+      </svg>
+      <div style={{ flex: 1, borderTop: `1px dashed ${p.borderMid}` }} />
+    </div>
+  )
+}
+
+// ── Section label ────────────────────────────────────────────
+function SectionLabel({ children }: { children: ReactNode }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+      <div style={{ flex: 1, borderTop: `1px solid ${p.borderMid}` }} />
+      <span style={{ fontFamily: mono, fontSize: 10, letterSpacing: '0.22em', color: p.textFaint, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+        {children}
+      </span>
+      <div style={{ flex: 1, borderTop: `1px solid ${p.borderMid}` }} />
+    </div>
+  )
 }
 
 // ── Types ────────────────────────────────────────────────────
@@ -85,24 +113,18 @@ export default function Home() {
 
       const totalKm = coinsRes.data?.reduce((sum, c) => sum + (c.total_km ?? 0), 0) ?? 0
       const totalKeepers = keepersRes.count ?? 0
-
       const countries = new Set(
-        entriesRes.data
-          ?.map(e => e.location_name?.split(',').pop()?.trim())
-          .filter(Boolean)
+        entriesRes.data?.map(e => e.location_name?.split(',').pop()?.trim()).filter(Boolean)
       )
 
       setStats({ totalKm, totalKeepers, totalCountries: countries.size })
-
       setMapPoints(
         (entriesRes.data ?? [])
           .filter(e => e.lat != null && e.lng != null)
           .map(e => ({ lat: e.lat as number, lng: e.lng as number }))
       )
-
       setFeed((feedRes.data ?? []) as FeedEntry[])
     }
-
     load()
   }, [])
 
@@ -112,123 +134,147 @@ export default function Home() {
     setWaitlistState('loading')
     const { error } = await supabase.from('waitlist').insert({ email: email.trim() })
     if (error) {
-      // unique violation = already on the list, treat as success
       setWaitlistState(error.code === '23505' ? 'done' : 'error')
     } else {
       setWaitlistState('done')
     }
   }
 
+  const stamps = [
+    { label: 'KM\nTRAVELED', value: stats ? formatKm(stats.totalKm) : '—', rotate: '-1.5deg' },
+    { label: 'KEEPERS', value: stats ? stats.totalKeepers.toString() : '—', rotate: '1deg' },
+    { label: 'COUNTRIES', value: stats ? stats.totalCountries.toString() : '—', rotate: '-0.8deg' },
+  ]
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: p.bg, color: p.text }}>
+    <div style={{ minHeight: '100vh', backgroundColor: p.bg, ...grain, color: p.text }}>
 
       {/* ── Hero ─────────────────────────────────────────── */}
-      <section className="flex flex-col items-center text-center px-6 pt-14 pb-10">
-        <img src="/logo.png" alt="Güorld Coin" style={{ width: 200, marginBottom: 24 }} />
-        <p className="text-xl font-semibold tracking-tight max-w-xs leading-snug" style={{ color: p.text }}>
-          A coin that travels the world,<br />collecting human stories.
+      <section style={{ textAlign: 'center', padding: '36px 24px 20px' }}>
+        <img src="/logo.png" alt="Güorld Coin" style={{ width: 180, marginBottom: 18, display: 'inline-block' }} />
+        <p style={{
+          fontFamily: playfair,
+          fontSize: 'clamp(26px, 6.5vw, 40px)',
+          fontStyle: 'italic',
+          fontWeight: 700,
+          color: p.text,
+          lineHeight: 1.2,
+          maxWidth: 360,
+          margin: '0 auto 14px',
+        }}>
+          A coin that travels the world, collecting human stories.
         </p>
-        <p className="mt-3 text-sm" style={{ color: p.textMuted }}>
-          Tap a coin. Leave your story. Pass it on.
+        <p style={{ fontFamily: mono, fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', color: p.textMuted }}>
+          Tap &nbsp;·&nbsp; Leave your story &nbsp;·&nbsp; Pass it on
         </p>
       </section>
 
-      {/* ── Stats bar ────────────────────────────────────── */}
-      <section style={{ borderTop: `1px solid ${p.borderMid}`, borderBottom: `1px solid ${p.borderMid}`, backgroundColor: p.bgCta }}>
-        <div className="max-w-xl mx-auto flex" style={{ borderColor: p.borderMid }}>
-          {[
-            { label: 'km traveled', value: stats ? formatKm(stats.totalKm) : '—' },
-            { label: 'keepers', value: stats ? stats.totalKeepers.toString() : '—' },
-            { label: 'countries', value: stats ? stats.totalCountries.toString() : '—' },
-          ].map(({ label, value }, i) => (
+      <div style={{ maxWidth: 580, margin: '0 auto', padding: '0 20px' }}>
+        <CompassDivider />
+      </div>
+
+      {/* ── Stats — passport stamps ───────────────────── */}
+      <section style={{ padding: '12px 24px 16px' }}>
+        <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', gap: 14 }}>
+          {stamps.map(({ label, value, rotate }) => (
             <div
               key={label}
-              className="flex-1 flex flex-col items-center py-5 px-2"
-              style={i > 0 ? { borderLeft: `1px solid ${p.borderMid}` } : undefined}
+              style={{
+                flex: 1,
+                textAlign: 'center',
+                padding: '14px 8px 12px',
+                border: `2px solid ${p.amber}`,
+                outline: `1px solid ${p.amber}`,
+                outlineOffset: 3,
+                transform: `rotate(${rotate})`,
+                backgroundColor: p.bgCard,
+              }}
             >
-              <span className="text-2xl font-bold tracking-tight leading-none" style={{ color: p.text }}>
+              <div style={{ fontFamily: playfair, fontSize: 28, fontWeight: 700, color: p.text, lineHeight: 1 }}>
                 {value}
-              </span>
-              <span className="text-[11px] mt-1.5 uppercase tracking-widest" style={{ color: p.textFaint }}>
+              </div>
+              <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.18em', color: p.textFaint, marginTop: 7, whiteSpace: 'pre', textTransform: 'uppercase' }}>
                 {label}
-              </span>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── Global map ───────────────────────────────────── */}
-      <MapErrorBoundary>
-        <Suspense
-          fallback={
-            <div
-              className="flex items-center justify-center"
-              style={{ height: '50vh', backgroundColor: p.bgMap, borderBottom: `1px solid ${p.borderMid}` }}
+      <div style={{ maxWidth: 580, margin: '0 auto', padding: '0 20px' }}>
+        <CompassDivider />
+      </div>
+
+      {/* ── Map ──────────────────────────────────────────── */}
+      <div>
+        <p style={{ fontFamily: mono, fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: p.textFaint, textAlign: 'center', padding: '6px 0 4px' }}>
+          ⊕ &nbsp;Known Territories
+        </p>
+        <div style={{ filter: 'sepia(28%) saturate(0.85) brightness(0.97)' }}>
+          <MapErrorBoundary>
+            <Suspense
+              fallback={
+                <div style={{ height: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: p.bgMap, borderBottom: `1px solid ${p.borderMid}` }}>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }} />
+                </div>
+              }
             >
-              <div
-                className="w-5 h-5 rounded-full animate-spin"
-                style={{ border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent' }}
-              />
-            </div>
-          }
-        >
-          <GlobalMap points={mapPoints} />
-        </Suspense>
-      </MapErrorBoundary>
+              <GlobalMap points={mapPoints} />
+            </Suspense>
+          </MapErrorBoundary>
+        </div>
+      </div>
 
       {/* ── Latest stories ───────────────────────────────── */}
-      <section className="max-w-xl mx-auto px-5 py-8">
-        <p className="text-[11px] font-mono tracking-widest uppercase mb-5" style={{ color: p.textFaint }}>
-          Latest stories
-        </p>
+      <section style={{ maxWidth: 580, margin: '0 auto', padding: '24px 20px 8px' }}>
+        <SectionLabel>Dispatches from the field</SectionLabel>
 
         {feed.length === 0 ? (
-          <div className="flex justify-center py-10">
-            <div
-              className="w-5 h-5 rounded-full animate-spin"
-              style={{ border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent' }}
-            />
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '32px 0' }}>
+            <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }} />
           </div>
         ) : (
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {feed.map(entry => (
               <Link
                 key={entry.id}
                 to={`/coin/${entry.coin?.slug}`}
-                className="block rounded-xl p-4"
-                style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}` }}
+                style={{
+                  display: 'block',
+                  padding: '14px 16px',
+                  backgroundColor: p.bgCard,
+                  border: `1px solid ${p.border}`,
+                  textDecoration: 'none',
+                }}
               >
-                <div className="flex items-baseline justify-between gap-2 mb-1">
-                  <div className="flex items-baseline gap-2 min-w-0">
-                    <span className="text-sm font-medium truncate" style={{ color: p.text }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 5 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, minWidth: 0 }}>
+                    <span style={{ fontFamily: crimson, fontSize: 16, fontWeight: 600, color: p.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.keeper?.display_name ?? 'Anonymous'}
                     </span>
                     {entry.location_name && (
-                      <span className="text-[11px] truncate" style={{ color: p.textMuted }}>
+                      <span style={{ fontFamily: mono, fontSize: 10, color: p.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {entry.location_name}
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-[11px] font-mono" style={{ color: p.amber }}>
-                      #{entry.coin?.slug}
-                    </span>
-                    <span className="text-[11px]" style={{ color: p.textFaint }}>
-                      {timeAgo(entry.created_at)}
-                    </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    <span style={{ fontFamily: mono, fontSize: 10, color: p.amber }}>#{entry.coin?.slug}</span>
+                    <span style={{ fontFamily: mono, fontSize: 10, color: p.textFaint }}>{timeAgo(entry.created_at)}</span>
                   </div>
                 </div>
                 {entry.story && (
-                  <p
-                    className="text-sm leading-relaxed"
-                    style={{
-                      color: p.textMuted,
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                    }}
-                  >
+                  <p style={{
+                    fontFamily: crimson,
+                    fontSize: 15,
+                    lineHeight: 1.5,
+                    color: p.textMuted,
+                    margin: 0,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}>
                     {entry.story}
                   </p>
                 )}
@@ -239,38 +285,56 @@ export default function Home() {
       </section>
 
       {/* ── Waitlist CTA ─────────────────────────────────── */}
-      <section className="px-5 pb-16">
-        <div
-          className="max-w-xl mx-auto rounded-2xl p-7 text-center"
-          style={{ backgroundColor: p.bgCta, border: `1px solid ${p.border}` }}
-        >
-          <p className="font-semibold text-base mb-1" style={{ color: p.text }}>
+      <section style={{ maxWidth: 580, margin: '0 auto', padding: '20px 20px 48px' }}>
+        <div style={{ padding: '28px 24px', border: `2px solid ${p.borderMid}`, outline: `1px solid ${p.border}`, outlineOffset: 4, backgroundColor: p.bgCta, textAlign: 'center' }}>
+          <p style={{ fontFamily: playfair, fontSize: 22, fontStyle: 'italic', color: p.text, marginBottom: 6 }}>
             Want your own Güorld Coin?
           </p>
-          <p className="text-sm mb-6" style={{ color: p.textMuted }}>
+          <p style={{ fontFamily: crimson, fontSize: 16, color: p.textMuted, marginBottom: 20 }}>
             We're minting new coins. Join the waitlist and we'll let you know.
           </p>
 
           {waitlistState === 'done' ? (
-            <p className="text-sm font-medium" style={{ color: p.amber }}>
+            <p style={{ fontFamily: crimson, fontSize: 16, fontStyle: 'italic', color: p.amber }}>
               You're on the list. We'll be in touch.
             </p>
           ) : (
-            <form onSubmit={handleWaitlist} className="flex gap-2">
+            <form onSubmit={handleWaitlist} style={{ display: 'flex', gap: 8 }}>
               <input
                 type="email"
                 required
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={e => { setEmail(e.target.value); if (waitlistState === 'error') setWaitlistState('idle') }}
                 placeholder="your@email.com"
-                className="flex-1 rounded-full px-4 py-3 text-sm outline-none"
-                style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}`, color: p.text }}
+                style={{
+                  flex: 1,
+                  padding: '11px 14px',
+                  fontSize: 14,
+                  fontFamily: crimson,
+                  outline: 'none',
+                  backgroundColor: p.bgCard,
+                  border: `1px solid ${p.border}`,
+                  color: p.text,
+                  minWidth: 0,
+                }}
               />
               <button
                 type="submit"
                 disabled={waitlistState === 'loading'}
-                className="rounded-full px-5 py-3 text-sm font-bold tracking-wide shrink-0 disabled:opacity-60"
-                style={{ backgroundColor: p.amberDot, color: '#fff' }}
+                style={{
+                  padding: '11px 20px',
+                  fontSize: 13,
+                  fontFamily: mono,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                  backgroundColor: p.amberDot,
+                  color: '#FAF5E9',
+                  cursor: 'pointer',
+                  border: 'none',
+                  flexShrink: 0,
+                  opacity: waitlistState === 'loading' ? 0.6 : 1,
+                }}
               >
                 {waitlistState === 'loading' ? '…' : 'Join'}
               </button>
@@ -278,9 +342,7 @@ export default function Home() {
           )}
 
           {waitlistState === 'error' && (
-            <p className="text-xs mt-2" style={{ color: '#991b1b' }}>
-              Something went wrong. Try again.
-            </p>
+            <p style={{ fontFamily: mono, fontSize: 11, color: '#8B1A1A', marginTop: 8 }}>Something went wrong. Try again.</p>
           )}
         </div>
       </section>

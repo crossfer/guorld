@@ -2,13 +2,14 @@ import { useEffect, useState, lazy, Suspense, Component } from 'react'
 import type { ReactNode, ErrorInfo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { p } from '../lib/theme'
+import { p, grain, playfair, crimson, mono } from '../lib/theme'
 import type { Coin, Entry } from '../types'
 
 const CoinMap = lazy(() =>
   import('../components/CoinMap').then(m => ({ default: m.CoinMap }))
 )
 
+// ── Error boundary ───────────────────────────────────────────
 class MapErrorBoundary extends Component<
   { children: ReactNode },
   { hasError: boolean }
@@ -25,7 +26,7 @@ class MapErrorBoundary extends Component<
           className="h-[40vh] flex items-center justify-center"
           style={{ backgroundColor: p.bgMap, borderBottom: `1px solid ${p.borderMid}` }}
         >
-          <p className="text-sm" style={{ color: p.textMuted }}>Map unavailable</p>
+          <p style={{ color: p.textMuted, fontFamily: mono, fontSize: 12 }}>Map unavailable</p>
         </div>
       )
     }
@@ -33,6 +34,25 @@ class MapErrorBoundary extends Component<
   }
 }
 
+// ── Compass divider ──────────────────────────────────────────
+function CompassDivider() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '6px 0', opacity: 0.6 }}>
+      <div style={{ flex: 1, borderTop: `1px dashed ${p.borderMid}` }} />
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="2" fill={p.amber} />
+        <line x1="10" y1="1"    x2="10" y2="7.5"  stroke={p.amber} strokeWidth="0.8" />
+        <line x1="10" y1="12.5" x2="10" y2="19"   stroke={p.amber} strokeWidth="0.8" />
+        <line x1="1"  y1="10"   x2="7.5" y2="10"  stroke={p.amber} strokeWidth="0.8" />
+        <line x1="12.5" y1="10" x2="19"  y2="10"  stroke={p.amber} strokeWidth="0.8" />
+        <polygon points="10,1.5 11.3,6.5 10,8 8.7,6.5" fill={p.amberDot} opacity="0.9" />
+      </svg>
+      <div style={{ flex: 1, borderTop: `1px dashed ${p.borderMid}` }} />
+    </div>
+  )
+}
+
+// ── Helpers ──────────────────────────────────────────────────
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(iso))
 }
@@ -43,6 +63,7 @@ function formatKm(km: number) {
   return `${Math.round(km)} km`
 }
 
+// ── Entry card ───────────────────────────────────────────────
 function EntryCard({ entry, index, isLast }: { entry: Entry; index: number; isLast: boolean }) {
   const name = entry.keeper?.display_name ?? 'Anonymous'
   const ig = entry.keeper?.instagram?.replace('@', '')
@@ -58,37 +79,36 @@ function EntryCard({ entry, index, isLast }: { entry: Entry; index: number; isLa
       </div>
 
       <div className={`flex-1 min-w-0 ${isLast ? 'pb-4' : 'pb-7'}`}>
-        <div className="rounded-xl overflow-hidden shadow-sm" style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}` }}>
+        <div style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}`, overflow: 'hidden' }}>
           {entry.photo_url && (
             <img src={entry.photo_url} alt="" className="w-full aspect-[4/3] object-cover" />
           )}
           <div className="p-4">
-            <div className="flex items-baseline justify-between gap-2 mb-1">
-              <div className="flex items-baseline gap-2">
-                <span className="text-[11px] font-mono tracking-widest" style={{ color: p.amber }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                <span style={{ fontFamily: mono, fontSize: 11, letterSpacing: '0.15em', color: p.amber }}>
                   #{String(index + 1).padStart(2, '0')}
                 </span>
-                <span className="text-sm font-medium" style={{ color: p.text }}>{name}</span>
+                <span style={{ fontFamily: crimson, fontSize: 16, fontWeight: 600, color: p.text }}>{name}</span>
               </div>
               {ig && (
                 <a
                   href={`https://instagram.com/${ig}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[11px] shrink-0"
-                  style={{ color: p.textFaint }}
+                  style={{ fontFamily: mono, fontSize: 10, color: p.textFaint, flexShrink: 0, textDecoration: 'none' }}
                 >
                   @{ig}
                 </a>
               )}
             </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] mb-3" style={{ color: p.textMuted }}>
-              {entry.location_name && <span>{entry.location_name}</span>}
-              <span>{formatDate(entry.created_at)}</span>
-              {entry.days_held != null && <span>{entry.days_held}d held</span>}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 12px', marginBottom: 10 }}>
+              {entry.location_name && <span style={{ fontFamily: mono, fontSize: 10, color: p.textMuted }}>{entry.location_name}</span>}
+              <span style={{ fontFamily: mono, fontSize: 10, color: p.textFaint }}>{formatDate(entry.created_at)}</span>
+              {entry.days_held != null && <span style={{ fontFamily: mono, fontSize: 10, color: p.textFaint }}>{entry.days_held}d held</span>}
             </div>
             {entry.story && (
-              <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: p.text }}>
+              <p style={{ fontFamily: crimson, fontSize: 16, lineHeight: 1.65, color: p.text, whiteSpace: 'pre-line', margin: 0 }}>
                 {entry.story}
               </p>
             )}
@@ -99,6 +119,7 @@ function EntryCard({ entry, index, isLast }: { entry: Entry; index: number; isLa
   )
 }
 
+// ── Page ─────────────────────────────────────────────────────
 export default function CoinPage() {
   const { slug } = useParams<{ slug: string }>()
   const [coin, setCoin] = useState<Coin | null>(null)
@@ -133,82 +154,71 @@ export default function CoinPage() {
       setEntries(entriesData ?? [])
       setLoading(false)
     }
-
     load()
   }, [slug])
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: p.bg }}>
-        <div
-          className="w-5 h-5 rounded-full animate-spin"
-          style={{ border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent' }}
-        />
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: p.bg }}>
+        <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }} />
       </div>
     )
   }
 
   if (notFound || !coin) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-2 px-6 text-center" style={{ backgroundColor: p.bg }}>
-        <p className="font-medium text-lg" style={{ color: p.text }}>Coin not found</p>
-        <p className="text-sm" style={{ color: p.textMuted }}>
-          <span className="font-mono" style={{ color: p.textFaint }}>#{slug}</span> doesn't exist or hasn't been activated yet.
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '0 24px', textAlign: 'center', backgroundColor: p.bg }}>
+        <p style={{ fontFamily: playfair, fontSize: 20, fontStyle: 'italic', color: p.text }}>Coin not found</p>
+        <p style={{ fontFamily: crimson, fontSize: 15, color: p.textMuted }}>
+          <span style={{ fontFamily: mono, color: p.textFaint }}>#{slug}</span> doesn't exist or hasn't been activated yet.
         </p>
-        <Link to="/" className="mt-5 text-xs" style={{ color: p.amber }}>← Back to home</Link>
+        <Link to="/" style={{ marginTop: 20, fontFamily: mono, fontSize: 11, letterSpacing: '0.1em', color: p.amber, textDecoration: 'none' }}>← Back to home</Link>
       </div>
     )
   }
 
   const keeperCount = entries.length
+  const poisticName = coin.name && !/^Güorld Coin #/i.test(coin.name) ? coin.name : null
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: p.bg, color: p.text }}>
+    <div style={{ minHeight: '100vh', backgroundColor: p.bg, ...grain, color: p.text }}>
 
-      {/* Header */}
-      <header className="px-5 pb-0 text-center" style={{ paddingTop: 4 }}>
-        <div className="max-w-xl mx-auto">
+      {/* ── Header ───────────────────────────────────────── */}
+      <header style={{ textAlign: 'center', paddingTop: 4 }}>
+        <div style={{ maxWidth: 580, margin: '0 auto', padding: '0 20px' }}>
           <img
             src="/logo.png"
             alt="Güorld Coin"
-            className="mx-auto"
-            style={{ width: 260, display: 'block', marginBottom: 2 }}
+            style={{ width: 260, display: 'block', margin: '0 auto 2px' }}
           />
 
-          {coin.name && !/^Güorld Coin #/i.test(coin.name) && (
+          {poisticName && (
             <div style={{ marginBottom: 8 }}>
-              <div className="text-[11px] uppercase tracking-widest" style={{ color: p.textFaint }}>
+              <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: p.textFaint }}>
                 Coin name
               </div>
-              <p
-                style={{
-                  fontFamily: 'Georgia, "Times New Roman", serif',
-                  fontSize: 20,
-                  letterSpacing: '0.06em',
-                  color: p.amber,
-                  marginTop: 2,
-                }}
-              >
-                {coin.name}
+              <p style={{ fontFamily: playfair, fontStyle: 'italic', fontSize: 22, color: p.amber, margin: '2px 0 0', letterSpacing: '0.04em' }}>
+                {poisticName}
               </p>
             </div>
           )}
 
-          <div className="flex items-end justify-center gap-8" style={{ paddingBottom: 10 }}>
-            <div>
-              <div className="text-3xl font-bold tracking-tight leading-none" style={{ color: p.text }}>
+          {/* Stats */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 32, paddingBottom: 10 }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: playfair, fontSize: 30, fontWeight: 700, lineHeight: 1, color: p.text }}>
                 {formatKm(coin.total_km)}
               </div>
-              <div className="text-[11px] mt-1.5 uppercase tracking-widest" style={{ color: p.textFaint }}>
+              <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: p.textFaint, marginTop: 5 }}>
                 traveled
               </div>
             </div>
-            <div className="w-px h-8" style={{ backgroundColor: p.borderMid }} />
-            <div>
-              <div className="text-3xl font-bold tracking-tight leading-none" style={{ color: p.text }}>
+            <div style={{ width: 1, height: 32, backgroundColor: p.borderMid }} />
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: playfair, fontSize: 30, fontWeight: 700, lineHeight: 1, color: p.text }}>
                 {keeperCount}
               </div>
-              <div className="text-[11px] mt-1.5 uppercase tracking-widest" style={{ color: p.textFaint }}>
+              <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: p.textFaint, marginTop: 5 }}>
                 {keeperCount === 1 ? 'keeper' : 'keepers'}
               </div>
             </div>
@@ -216,40 +226,44 @@ export default function CoinPage() {
         </div>
       </header>
 
-      {/* Map */}
-      <MapErrorBoundary>
-        <Suspense
-          fallback={
-            <div
-              className="h-[40vh] flex items-center justify-center"
-              style={{ backgroundColor: p.bgMap, borderBottom: `1px solid ${p.borderMid}` }}
-            >
+      {/* ── Map ──────────────────────────────────────────── */}
+      <div style={{ filter: 'sepia(28%) saturate(0.85) brightness(0.97)' }}>
+        <MapErrorBoundary>
+          <Suspense
+            fallback={
               <div
-                className="w-5 h-5 rounded-full animate-spin"
-                style={{ border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent' }}
-              />
-            </div>
-          }
-        >
-          <CoinMap entries={entries} />
-        </Suspense>
-      </MapErrorBoundary>
+                className="h-[40vh] flex items-center justify-center"
+                style={{ backgroundColor: p.bgMap, borderBottom: `1px solid ${p.borderMid}` }}
+              >
+                <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }} />
+              </div>
+            }
+          >
+            <CoinMap entries={entries} />
+          </Suspense>
+        </MapErrorBoundary>
+      </div>
 
-      {/* Story So Far */}
+      {/* ── Story So Far ─────────────────────────────────── */}
       {coin.story_so_far && (
-        <section style={{ borderBottom: `1px solid ${p.borderMid}` }}>
-          <div className="max-w-xl mx-auto px-5 py-6">
-            <p className="font-mono tracking-widest uppercase mb-4" style={{ fontSize: 13, color: p.amber }}>
+        <section style={{ borderBottom: `1px dashed ${p.borderMid}` }}>
+          <div style={{ maxWidth: 580, margin: '0 auto', padding: '20px 20px 20px' }}>
+            <div style={{ maxWidth: 580, margin: '0 auto', padding: '0 0 12px' }}>
+              <CompassDivider />
+            </div>
+            <p style={{ fontFamily: mono, fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase', color: p.amber, marginBottom: 14 }}>
               Story so far
             </p>
             <p
-              className="italic pl-5"
               style={{
-                fontFamily: 'Georgia, "Times New Roman", serif',
-                fontSize: 17,
+                fontFamily: crimson,
+                fontStyle: 'italic',
+                fontSize: 18,
                 lineHeight: 1.75,
                 color: p.textMuted,
-                borderLeft: `3px solid ${p.amberDot}60`,
+                paddingLeft: 18,
+                borderLeft: `3px solid ${p.amberDot}55`,
+                margin: 0,
               }}
             >
               {coin.story_so_far}
@@ -258,18 +272,21 @@ export default function CoinPage() {
         </section>
       )}
 
-      {/* Timeline */}
-      <main className="max-w-xl mx-auto px-5 py-8">
+      {/* ── Journey ──────────────────────────────────────── */}
+      <main style={{ maxWidth: 580, margin: '0 auto', padding: '24px 20px' }}>
         {entries.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-4xl mb-5">🌍</div>
-            <p className="font-medium text-base mb-1" style={{ color: p.text }}>No stories yet.</p>
-            <p className="text-sm" style={{ color: p.textMuted }}>Be the first Keeper.</p>
+          <div style={{ textAlign: 'center', padding: '60px 0' }}>
+            <div style={{ fontSize: 36, marginBottom: 16 }}>🌍</div>
+            <p style={{ fontFamily: playfair, fontStyle: 'italic', fontSize: 18, color: p.text, marginBottom: 4 }}>No stories yet.</p>
+            <p style={{ fontFamily: crimson, fontSize: 15, color: p.textMuted }}>Be the first Keeper.</p>
           </div>
         ) : (
           <>
-            <p className="text-[11px] font-mono tracking-widest uppercase mb-6" style={{ color: p.textFaint }}>
-              Journey
+            <div style={{ maxWidth: 580 }}>
+              <CompassDivider />
+            </div>
+            <p style={{ fontFamily: mono, fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: p.textFaint, margin: '12px 0 20px' }}>
+              Keeper log
             </p>
             {entries.map((entry, i) => (
               <EntryCard key={entry.id} entry={entry} index={i} isLast={i === entries.length - 1} />
@@ -277,15 +294,19 @@ export default function CoinPage() {
           </>
         )}
 
-        {/* Waitlist CTA */}
-        <div className="mt-12 rounded-2xl p-7 text-center" style={{ backgroundColor: p.bgCta, border: `1px solid ${p.border}` }}>
-          <p className="font-semibold text-base mb-1" style={{ color: p.text }}>This coin travels free.</p>
-          <p className="text-sm mb-5" style={{ color: p.textMuted }}>
+        {/* ── Waitlist CTA ─────────────────────────────── */}
+        <div style={{ marginTop: 40, padding: '24px 20px', border: `2px solid ${p.borderMid}`, outline: `1px solid ${p.border}`, outlineOffset: 4, backgroundColor: p.bgCta, textAlign: 'center' }}>
+          <p style={{ fontFamily: playfair, fontStyle: 'italic', fontSize: 20, color: p.text, marginBottom: 6 }}>
+            This coin travels free.
+          </p>
+          <p style={{ fontFamily: crimson, fontSize: 16, color: p.textMuted, marginBottom: 20 }}>
             Get your own coin and start a story that outlives you.
           </p>
 
           {waitlistDone ? (
-            <p className="text-sm font-medium" style={{ color: p.amber }}>You're on the list. We'll be in touch.</p>
+            <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 16, color: p.amber }}>
+              You're on the list. We'll be in touch.
+            </p>
           ) : (
             <div style={{ display: 'flex', gap: 8 }}>
               <input
@@ -295,9 +316,9 @@ export default function CoinPage() {
                 onChange={e => setWaitlistEmail(e.target.value)}
                 style={{
                   flex: 1,
-                  borderRadius: 999,
-                  padding: '12px 16px',
+                  padding: '11px 14px',
                   fontSize: 14,
+                  fontFamily: crimson,
                   outline: 'none',
                   backgroundColor: p.bgCard,
                   border: `1px solid ${p.border}`,
@@ -312,15 +333,16 @@ export default function CoinPage() {
                   if (!error || error.code === '23505') setWaitlistDone(true)
                 }}
                 style={{
-                  borderRadius: 999,
-                  padding: '12px 20px',
-                  fontSize: 14,
+                  padding: '11px 18px',
+                  fontSize: 13,
+                  fontFamily: mono,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
                   fontWeight: 700,
                   backgroundColor: p.amberDot,
-                  color: '#fff',
+                  color: '#FAF5E9',
                   cursor: 'pointer',
                   border: 'none',
-                  whiteSpace: 'nowrap',
                   flexShrink: 0,
                 }}
               >
