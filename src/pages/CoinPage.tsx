@@ -329,7 +329,6 @@ export default function CoinPage() {
             </div>
           )}
         </div>
-        </div>
       </main>
     </div>
   )
