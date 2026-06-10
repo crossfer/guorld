@@ -150,11 +150,11 @@ export default function Home() {
     <div style={{ minHeight: '100vh', backgroundColor: p.bg, ...grain, color: p.text }}>
 
       {/* ── Hero ─────────────────────────────────────────── */}
-      <section style={{ textAlign: 'center', padding: '36px 24px 20px' }}>
-        <img src="/logo.png" alt="Güorld Coin" style={{ width: 280, marginBottom: 18, display: 'inline-block' }} />
+      <section style={{ textAlign: 'center', padding: '10px 10px 10px' }}>
+        <img src="/logo.png" alt="Güorld Coin" style={{ width: 280, marginBottom: -20, display: 'inline-block' }} />
         <p style={{
           fontFamily: playfair,
-          fontSize: 36,
+          fontSize: 28,
           fontStyle: 'italic',
           fontWeight: 700,
           color: p.text,
@@ -190,10 +190,10 @@ export default function Home() {
                 backgroundColor: p.bgCard,
               }}
             >
-              <div style={{ fontFamily: playfair, fontSize: 48, fontWeight: 700, color: p.text, lineHeight: 1 }}>
+              <div style={{ fontFamily: playfair, fontSize: 42, fontWeight: 700, color: p.text, lineHeight: 1 }}>
                 {value}
               </div>
-              <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: '0.18em', color: p.textFaint, marginTop: 8, whiteSpace: 'pre', textTransform: 'uppercase' }}>
+              <div style={{ fontFamily: mono, fontSize: 13, letterSpacing: '0.18em', color: p.textFaint, marginTop: 8, whiteSpace: 'pre', textTransform: 'uppercase' }}>
                 {label}
               </div>
             </div>
