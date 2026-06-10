@@ -237,12 +237,18 @@ export default function CoinPage() {
       {coin.story_so_far && (
         <section style={{ borderBottom: `1px solid ${p.borderMid}` }}>
           <div className="max-w-xl mx-auto px-5 py-6">
-            <p className="text-[11px] font-mono tracking-widest uppercase mb-3" style={{ color: p.amber }}>
+            <p className="font-mono tracking-widest uppercase mb-4" style={{ fontSize: 13, color: p.amber }}>
               Story so far
             </p>
             <p
-              className="text-sm leading-relaxed italic pl-4"
-              style={{ color: p.textMuted, borderLeft: `2px solid ${p.amberDot}50` }}
+              className="italic pl-5"
+              style={{
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                fontSize: 17,
+                lineHeight: 1.75,
+                color: p.textMuted,
+                borderLeft: `3px solid ${p.amberDot}60`,
+              }}
             >
               {coin.story_so_far}
             </p>
