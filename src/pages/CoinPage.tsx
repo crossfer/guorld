@@ -164,30 +164,35 @@ export default function CoinPage() {
     <div className="min-h-screen" style={{ backgroundColor: p.bg, color: p.text }}>
 
       {/* Header */}
-      <header className="px-5 pt-6 pb-0 text-center">
+      <header className="px-5 pb-0 text-center" style={{ paddingTop: 16 }}>
         <div className="max-w-xl mx-auto">
           <img
             src="/logo.png"
             alt="Güorld Coin"
-            className="mx-auto mb-3"
-            style={{ width: 260, display: 'block' }}
+            className="mx-auto"
+            style={{ width: 260, display: 'block', marginBottom: 8 }}
           />
 
           {coin.name && (
-            <p
-              className="mb-3"
-              style={{
-                fontFamily: 'Georgia, "Times New Roman", serif',
-                fontSize: 22,
-                letterSpacing: '0.08em',
-                color: p.amber,
-              }}
-            >
-              {coin.name}
-            </p>
+            <div style={{ marginBottom: 10 }}>
+              <div className="text-[11px] uppercase tracking-widest" style={{ color: p.textFaint }}>
+                Coin name
+              </div>
+              <p
+                style={{
+                  fontFamily: 'Georgia, "Times New Roman", serif',
+                  fontSize: 20,
+                  letterSpacing: '0.06em',
+                  color: p.amber,
+                  marginTop: 2,
+                }}
+              >
+                {coin.name}
+              </p>
+            </div>
           )}
 
-          <div className="flex items-end justify-center gap-8 pb-4">
+          <div className="flex items-end justify-center gap-8" style={{ paddingBottom: 10 }}>
             <div>
               <div className="text-3xl font-bold tracking-tight leading-none" style={{ color: p.text }}>
                 {formatKm(coin.total_km)}
