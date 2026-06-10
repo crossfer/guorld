@@ -99,6 +99,65 @@ function EntryCard({ entry, index, isLast }: { entry: Entry; index: number; isLa
   )
 }
 
+function WaitlistCta() {
+  const [email, setEmail] = useState('')
+  const [state, setState] = useState<'idle' | 'loading' | 'done' | 'duplicate' | 'error'>('idle')
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.trim()) return
+    setState('loading')
+    const { error } = await supabase.from('waitlist').insert({ email: email.trim() })
+    if (error) {
+      setState(error.code === '23505' ? 'duplicate' : 'error')
+    } else {
+      setState('done')
+    }
+  }
+
+  return (
+    <div className="mt-12 rounded-2xl p-7 text-center" style={{ backgroundColor: p.bgCta, border: `1px solid ${p.border}` }}>
+      <p className="font-semibold text-base mb-1" style={{ color: p.text }}>This coin travels free.</p>
+      <p className="text-sm mb-6" style={{ color: p.textMuted }}>
+        Get your own coin and start a story that outlives you.
+      </p>
+
+      {state === 'done' && (
+        <p className="text-sm font-medium" style={{ color: p.amber }}>You're on the list. We'll be in touch.</p>
+      )}
+      {state === 'duplicate' && (
+        <p className="text-sm font-medium" style={{ color: p.amber }}>You're already on the list.</p>
+      )}
+      {(state === 'idle' || state === 'loading' || state === 'error') && (
+        <>
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={e => { setEmail(e.target.value); if (state === 'error') setState('idle') }}
+              placeholder="your@email.com"
+              className="flex-1 rounded-full px-4 py-3 text-sm outline-none"
+              style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}`, color: p.text }}
+            />
+            <button
+              type="submit"
+              disabled={state === 'loading'}
+              className="rounded-full px-5 py-3 text-sm font-bold tracking-wide shrink-0 disabled:opacity-60"
+              style={{ backgroundColor: p.amberDot, color: '#fff' }}
+            >
+              {state === 'loading' ? '…' : 'Join'}
+            </button>
+          </form>
+          {state === 'error' && (
+            <p className="text-xs mt-2" style={{ color: '#991b1b' }}>Something went wrong. Try again.</p>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function CoinPage() {
   const { slug } = useParams<{ slug: string }>()
   const [coin, setCoin] = useState<Coin | null>(null)
@@ -276,20 +335,7 @@ export default function CoinPage() {
         )}
 
         {/* Waitlist CTA */}
-        <div
-          className="mt-12 rounded-2xl p-7 text-center"
-          style={{ backgroundColor: p.bgCta, border: `1px solid ${p.border}` }}
-        >
-          <p className="font-semibold text-base mb-1" style={{ color: p.text }}>This coin travels free.</p>
-          <p className="text-sm mb-6" style={{ color: p.textMuted }}>
-            Get your own coin and start a story that outlives you.
-          </p>
-          <button
-            className="inline-flex items-center text-sm font-bold px-7 py-3 rounded-full tracking-wide"
-            style={{ backgroundColor: p.amberDot, color: '#fff' }}
-          >
-            Join the waitlist
-          </button>
+        <WaitlistCta />
         </div>
       </main>
     </div>
