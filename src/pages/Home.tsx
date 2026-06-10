@@ -54,7 +54,7 @@ function SectionLabel({ children }: { children: ReactNode }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
       <div style={{ flex: 1, borderTop: `1px solid ${p.borderMid}` }} />
-      <span style={{ fontFamily: mono, fontSize: 10, letterSpacing: '0.22em', color: p.textFaint, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+      <span style={{ fontFamily: mono, fontSize: 12, letterSpacing: '0.22em', color: p.textFaint, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
         {children}
       </span>
       <div style={{ flex: 1, borderTop: `1px solid ${p.borderMid}` }} />
@@ -151,10 +151,10 @@ export default function Home() {
 
       {/* ── Hero ─────────────────────────────────────────── */}
       <section style={{ textAlign: 'center', padding: '36px 24px 20px' }}>
-        <img src="/logo.png" alt="Güorld Coin" style={{ width: 180, marginBottom: 18, display: 'inline-block' }} />
+        <img src="/logo.png" alt="Güorld Coin" style={{ width: 280, marginBottom: 18, display: 'inline-block' }} />
         <p style={{
           fontFamily: playfair,
-          fontSize: 'clamp(26px, 6.5vw, 40px)',
+          fontSize: 36,
           fontStyle: 'italic',
           fontWeight: 700,
           color: p.text,
@@ -164,7 +164,7 @@ export default function Home() {
         }}>
           A coin that travels the world, collecting human stories.
         </p>
-        <p style={{ fontFamily: mono, fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', color: p.textMuted }}>
+        <p style={{ fontFamily: mono, fontSize: 14, letterSpacing: '0.2em', textTransform: 'uppercase', color: p.textMuted }}>
           Tap &nbsp;·&nbsp; Leave your story &nbsp;·&nbsp; Pass it on
         </p>
       </section>
@@ -190,10 +190,10 @@ export default function Home() {
                 backgroundColor: p.bgCard,
               }}
             >
-              <div style={{ fontFamily: playfair, fontSize: 28, fontWeight: 700, color: p.text, lineHeight: 1 }}>
+              <div style={{ fontFamily: playfair, fontSize: 48, fontWeight: 700, color: p.text, lineHeight: 1 }}>
                 {value}
               </div>
-              <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.18em', color: p.textFaint, marginTop: 7, whiteSpace: 'pre', textTransform: 'uppercase' }}>
+              <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: '0.18em', color: p.textFaint, marginTop: 8, whiteSpace: 'pre', textTransform: 'uppercase' }}>
                 {label}
               </div>
             </div>
@@ -207,7 +207,7 @@ export default function Home() {
 
       {/* ── Map ──────────────────────────────────────────── */}
       <div>
-        <p style={{ fontFamily: mono, fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: p.textFaint, textAlign: 'center', padding: '6px 0 4px' }}>
+        <p style={{ fontFamily: mono, fontSize: 12, letterSpacing: '0.25em', textTransform: 'uppercase', color: p.textFaint, textAlign: 'center', padding: '6px 0 4px' }}>
           ⊕ &nbsp;Known Territories
         </p>
         <div style={{ filter: 'sepia(28%) saturate(0.85) brightness(0.97)' }}>
