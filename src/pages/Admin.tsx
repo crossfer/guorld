@@ -2,6 +2,54 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { p } from '../lib/theme'
 
+const SESSION_KEY = 'admin_auth'
+
+function PasswordGate({ onAuth }: { onAuth: () => void }) {
+  const [value, setValue] = useState('')
+  const [wrong, setWrong] = useState(false)
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (value === import.meta.env.VITE_ADMIN_PASSWORD) {
+      sessionStorage.setItem(SESSION_KEY, '1')
+      onAuth()
+    } else {
+      setWrong(true)
+      setValue('')
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ backgroundColor: p.bg }}>
+      <p className="text-[11px] font-mono tracking-widest uppercase mb-6" style={{ color: p.amber }}>
+        Admin
+      </p>
+      <form onSubmit={handleSubmit} className="w-full max-w-xs space-y-3">
+        <input
+          type="password"
+          autoFocus
+          required
+          value={value}
+          onChange={e => { setValue(e.target.value); setWrong(false) }}
+          placeholder="Password"
+          className="w-full rounded-xl px-4 py-3.5 text-sm outline-none text-center tracking-widest"
+          style={{ backgroundColor: p.bgCard, border: `1px solid ${wrong ? '#fca5a5' : p.border}`, color: p.text }}
+        />
+        {wrong && (
+          <p className="text-xs text-center" style={{ color: '#991b1b' }}>Incorrect password</p>
+        )}
+        <button
+          type="submit"
+          className="w-full rounded-full py-3 text-sm font-bold tracking-wide"
+          style={{ backgroundColor: p.amberDot, color: '#fff' }}
+        >
+          Enter
+        </button>
+      </form>
+    </div>
+  )
+}
+
 interface CoinRow {
   id: string
   slug: string
@@ -19,6 +67,7 @@ function nfcUrl(slug: string, token: string) {
 }
 
 export default function Admin() {
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1')
   const [coins, setCoins] = useState<CoinRow[]>([])
   const [loading, setLoading] = useState(true)
   const [slug, setSlug] = useState('')
@@ -36,7 +85,9 @@ export default function Admin() {
     setLoading(false)
   }
 
-  useEffect(() => { loadCoins() }, [])
+  useEffect(() => { if (authed) loadCoins() }, [authed])
+
+  if (!authed) return <PasswordGate onAuth={() => setAuthed(true)} />
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()
