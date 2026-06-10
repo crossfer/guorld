@@ -3,7 +3,7 @@ import type { ReactNode, ErrorInfo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { p, grain, playfair, crimson, mono } from '../lib/theme'
-import { useTranslation } from '../lib/i18n'
+import { useTranslation, detectLang } from '../lib/i18n'
 import type { Coin, Entry } from '../types'
 
 const CoinMap = lazy(() =>
@@ -129,6 +129,25 @@ export default function CoinPage() {
   const [notFound, setNotFound] = useState(false)
   const [waitlistEmail, setWaitlistEmail] = useState('')
   const [waitlistDone, setWaitlistDone] = useState(false)
+  const [translatedStory, setTranslatedStory] = useState<string | null>(null)
+  const [translatingStory, setTranslatingStory] = useState(false)
+
+  async function translateStory(text: string): Promise<string> {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Translate this travel story to Spanish. Keep the poetic tone. Return only the translated text, nothing else:\n\n${text}`
+        }]
+      })
+    })
+    const data = await response.json()
+    return data.content[0].text
+  }
 
   useEffect(() => {
     async function load() {
@@ -145,6 +164,14 @@ export default function CoinPage() {
       }
 
       setCoin(coinData)
+
+      if (detectLang() === 'es' && coinData.story_so_far) {
+        setTranslatingStory(true)
+        translateStory(coinData.story_so_far)
+          .then(setTranslatedStory)
+          .catch(console.error)
+          .finally(() => setTranslatingStory(false))
+      }
 
       const { data: entriesData } = await supabase
         .from('entries')
@@ -256,20 +283,26 @@ export default function CoinPage() {
             <p style={{ fontFamily: mono, fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase', color: p.amber, marginBottom: 14 }}>
               {t.storySoFar}
             </p>
-            <p
-              style={{
-                fontFamily: crimson,
-                fontStyle: 'italic',
-                fontSize: 18,
-                lineHeight: 1.75,
-                color: p.textMuted,
-                paddingLeft: 18,
-                borderLeft: `3px solid ${p.amberDot}55`,
-                margin: 0,
-              }}
-            >
-              {coin.story_so_far}
-            </p>
+            {translatingStory ? (
+              <p style={{ fontFamily: mono, fontSize: 11, letterSpacing: '0.15em', color: p.textFaint, fontStyle: 'normal' }}>
+                Traduciendo…
+              </p>
+            ) : (
+              <p
+                style={{
+                  fontFamily: crimson,
+                  fontStyle: 'italic',
+                  fontSize: 18,
+                  lineHeight: 1.75,
+                  color: p.textMuted,
+                  paddingLeft: 18,
+                  borderLeft: `3px solid ${p.amberDot}55`,
+                  margin: 0,
+                }}
+              >
+                {translatedStory ?? coin.story_so_far}
+              </p>
+            )}
           </div>
         </section>
       )}

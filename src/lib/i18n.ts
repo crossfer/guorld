@@ -112,7 +112,7 @@ const translations = {
   },
 }
 
-function detectLang(): Lang {
+export function detectLang(): Lang {
   const code = navigator.language?.slice(0, 2).toLowerCase()
   return code === 'es' ? 'es' : 'en'
 }
