@@ -113,9 +113,9 @@ const translations = {
 }
 
 export function detectLang(): Lang {
-  const lang = (navigator.languages?.[0] || navigator.language || 'en').slice(0, 2).toLowerCase()
+  const lang = navigator.languages?.some(l => l.startsWith('es')) ? 'es' : 'en'
   console.log('[i18n] navigator.languages:', navigator.languages, '→ detected:', lang)
-  return lang === 'es' ? 'es' : 'en'
+  return lang
 }
 
 export function useTranslation<K extends keyof typeof translations.en>(ns: K) {
