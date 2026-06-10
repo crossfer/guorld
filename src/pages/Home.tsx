@@ -3,6 +3,7 @@ import type { ReactNode, ErrorInfo } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { p, grain, playfair, crimson, mono } from '../lib/theme'
+import { useTranslation } from '../lib/i18n'
 import type { Entry, Keeper } from '../types'
 
 const GlobalMap = lazy(() =>
@@ -140,10 +141,12 @@ export default function Home() {
     }
   }
 
+  const t = useTranslation('home')
+
   const stamps = [
-    { label: 'KM\nTRAVELED', value: stats ? formatKm(stats.totalKm) : '—', rotate: '-1.5deg' },
-    { label: 'KEEPERS', value: stats ? stats.totalKeepers.toString() : '—', rotate: '1deg' },
-    { label: 'COUNTRIES', value: stats ? stats.totalCountries.toString() : '—', rotate: '-0.8deg' },
+    { label: t.kmTraveled, value: stats ? formatKm(stats.totalKm) : '—', rotate: '-1.5deg' },
+    { label: t.keepers,    value: stats ? stats.totalKeepers.toString() : '—', rotate: '1deg' },
+    { label: t.countries,  value: stats ? stats.totalCountries.toString() : '—', rotate: '-0.8deg' },
   ]
 
   return (
@@ -162,10 +165,10 @@ export default function Home() {
           maxWidth: 360,
           margin: '0 auto 14px',
         }}>
-          A coin that travels the world, collecting human stories.
+          {t.tagline}
         </p>
         <p style={{ fontFamily: mono, fontSize: 14, letterSpacing: '0.2em', textTransform: 'uppercase', color: p.textMuted }}>
-          Tap &nbsp;·&nbsp; Leave your story &nbsp;·&nbsp; Pass it on
+          {t.subtagline}
         </p>
       </section>
 
@@ -208,7 +211,7 @@ export default function Home() {
       {/* ── Map ──────────────────────────────────────────── */}
       <div>
         <p style={{ fontFamily: mono, fontSize: 12, letterSpacing: '0.25em', textTransform: 'uppercase', color: p.textFaint, textAlign: 'center', padding: '6px 0 4px' }}>
-          ⊕ &nbsp;Known Territories
+          {t.knownTerritories}
         </p>
         <div style={{ filter: 'sepia(28%) saturate(0.85) brightness(0.97)' }}>
           <MapErrorBoundary>
@@ -227,7 +230,7 @@ export default function Home() {
 
       {/* ── Latest stories ───────────────────────────────── */}
       <section style={{ maxWidth: 580, margin: '0 auto', padding: '24px 20px 8px' }}>
-        <SectionLabel>Dispatches from the field</SectionLabel>
+        <SectionLabel>{t.latestStories}</SectionLabel>
 
         {feed.length === 0 ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: '32px 0' }}>
@@ -288,15 +291,15 @@ export default function Home() {
       <section style={{ maxWidth: 580, margin: '0 auto', padding: '20px 20px 48px' }}>
         <div style={{ padding: '28px 24px', border: `2px solid ${p.borderMid}`, outline: `1px solid ${p.border}`, outlineOffset: 4, backgroundColor: p.bgCta, textAlign: 'center' }}>
           <p style={{ fontFamily: playfair, fontSize: 22, fontStyle: 'italic', color: p.text, marginBottom: 6 }}>
-            Want your own Güorld Coin?
+            {t.ctaHeading}
           </p>
           <p style={{ fontFamily: crimson, fontSize: 16, color: p.textMuted, marginBottom: 20 }}>
-            We're minting new coins. Join the waitlist and we'll let you know.
+            {t.ctaBody}
           </p>
 
           {waitlistState === 'done' ? (
             <p style={{ fontFamily: crimson, fontSize: 16, fontStyle: 'italic', color: p.amber }}>
-              You're on the list. We'll be in touch.
+              {t.waitlistDone}
             </p>
           ) : (
             <form onSubmit={handleWaitlist} style={{ display: 'flex', gap: 8 }}>
@@ -305,7 +308,7 @@ export default function Home() {
                 required
                 value={email}
                 onChange={e => { setEmail(e.target.value); if (waitlistState === 'error') setWaitlistState('idle') }}
-                placeholder="your@email.com"
+                placeholder={t.emailPlaceholder}
                 style={{
                   flex: 1,
                   padding: '11px 14px',
@@ -336,13 +339,13 @@ export default function Home() {
                   opacity: waitlistState === 'loading' ? 0.6 : 1,
                 }}
               >
-                {waitlistState === 'loading' ? '…' : 'Join'}
+                {waitlistState === 'loading' ? '…' : t.joinBtn}
               </button>
             </form>
           )}
 
           {waitlistState === 'error' && (
-            <p style={{ fontFamily: mono, fontSize: 11, color: '#8B1A1A', marginTop: 8 }}>Something went wrong. Try again.</p>
+            <p style={{ fontFamily: mono, fontSize: 11, color: '#8B1A1A', marginTop: 8 }}>{t.waitlistError}</p>
           )}
         </div>
       </section>

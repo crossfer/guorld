@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { p } from '../lib/theme'
+import { useTranslation } from '../lib/i18n'
 
 type GpsStatus = 'idle' | 'loading' | 'done' | 'error'
 
@@ -29,6 +30,7 @@ export default function AddStory() {
   const [searchParams] = useSearchParams()
   const writeToken = searchParams.get('token')
 
+  const t = useTranslation('addStory')
   const [displayName, setDisplayName] = useState('')
   const [instagram, setInstagram] = useState('')
   const [story, setStory] = useState('')
@@ -147,13 +149,13 @@ export default function AddStory() {
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ backgroundColor: p.bg }}>
         <div className="text-4xl mb-5">🪙</div>
         <p className="font-semibold text-lg mb-2" style={{ color: p.text }}>
-          You need the physical coin
+          {t.lockedHeading}
         </p>
         <p className="text-sm max-w-xs" style={{ color: p.textMuted }}>
-          To leave your story, tap the NFC tag on the coin. The link on the tag is the only way in.
+          {t.lockedBody}
         </p>
         <Link to={`/coin/${slug}`} className="mt-8 text-xs" style={{ color: p.amber }}>
-          ← View this coin's journey
+          {t.viewJourney}
         </Link>
       </div>
     )
@@ -174,10 +176,10 @@ export default function AddStory() {
           </Link>
           <img src="/logo.png" alt="Güorld Coin" style={{ width: 220, display: 'block', marginBottom: 12 }} />
           <h1 className="text-xl font-semibold tracking-tight" style={{ color: p.text }}>
-            Add your story
+            {t.heading}
           </h1>
           <p className="text-sm mt-1" style={{ color: p.textMuted }}>
-            You are now a Keeper of this coin.
+            {t.subheading}
           </p>
         </div>
       </header>
@@ -225,13 +227,13 @@ export default function AddStory() {
 
         {/* Name */}
         <div>
-          <label style={labelStyle}>Your name</label>
+          <label style={labelStyle}>{t.yourName}</label>
           <input
             type="text"
             required
             value={displayName}
             onChange={e => setDisplayName(e.target.value)}
-            placeholder="How should we remember you?"
+            placeholder={t.namePlaceholder}
             className="w-full rounded-xl px-4 py-3.5 text-sm outline-none"
             style={inputStyle}
           />
@@ -240,7 +242,7 @@ export default function AddStory() {
         {/* Instagram */}
         <div>
           <label style={labelStyle}>
-            Instagram <span style={{ color: p.dotGrid }}>— optional</span>
+            {t.instagram} <span style={{ color: p.dotGrid }}>{t.optional}</span>
           </label>
           <div className="relative">
             <span
@@ -263,7 +265,7 @@ export default function AddStory() {
         {/* Story */}
         <div>
           <div className="flex items-baseline justify-between mb-2">
-            <label style={{ ...labelStyle, marginBottom: 0 }}>Your story</label>
+            <label style={{ ...labelStyle, marginBottom: 0 }}>{t.yourStory}</label>
             <span
               className="text-[11px]"
               style={{ color: story.length > 450 ? p.amber : p.textFaint }}
@@ -275,7 +277,7 @@ export default function AddStory() {
             required
             value={story}
             onChange={e => setStory(e.target.value.slice(0, STORY_MAX))}
-            placeholder="Where are you? What brought you here? What will you carry with you?"
+            placeholder={t.storyPlaceholder}
             rows={5}
             className="w-full rounded-xl px-4 py-3.5 text-sm outline-none resize-none"
             style={inputStyle}
@@ -284,7 +286,7 @@ export default function AddStory() {
 
         {/* Location */}
         <div>
-          <label style={labelStyle}>Location</label>
+          <label style={labelStyle}>{t.location}</label>
 
           <button
             type="button"
@@ -306,15 +308,15 @@ export default function AddStory() {
             {gpsStatus === 'idle' && '📍'}
             {gpsStatus === 'error' && '📍'}
             {gpsStatus === 'done'
-              ? '✓ Location detected'
+              ? t.locationDetected
               : gpsStatus === 'loading'
-                ? 'Detecting…'
-                : 'Detect my location'}
+                ? t.detecting
+                : t.detectLocation}
           </button>
 
           {gpsStatus === 'error' && (
             <p className="text-xs mb-2" style={{ color: p.amber }}>
-              GPS unavailable — type your location below.
+              {t.gpsError}
             </p>
           )}
 
@@ -322,7 +324,7 @@ export default function AddStory() {
             type="text"
             value={locationName}
             onChange={e => setLocationName(e.target.value)}
-            placeholder="City, Country"
+            placeholder={t.cityCountry}
             className="w-full rounded-xl px-4 py-3.5 text-sm outline-none"
             style={inputStyle}
           />
@@ -346,10 +348,10 @@ export default function AddStory() {
             className="w-full rounded-full py-4 text-sm font-bold tracking-wide disabled:opacity-60"
             style={{ backgroundColor: p.amberDot, color: '#fff' }}
           >
-            {submitting ? 'Saving your story…' : 'Leave my story'}
+            {submitting ? t.submitting : t.submit}
           </button>
           <p className="text-xs text-center" style={{ color: p.textFaint }}>
-            Once you leave your story, you're a Keeper forever.
+            {t.keeperForever}
           </p>
         </div>
 

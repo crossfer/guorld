@@ -3,6 +3,7 @@ import type { ReactNode, ErrorInfo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { p, grain, playfair, crimson, mono } from '../lib/theme'
+import { useTranslation } from '../lib/i18n'
 import type { Coin, Entry } from '../types'
 
 const CoinMap = lazy(() =>
@@ -177,6 +178,7 @@ export default function CoinPage() {
     )
   }
 
+  const t = useTranslation('coin')
   const keeperCount = entries.length
   const poisticName = coin.name && !/^Güorld Coin #/i.test(coin.name) ? coin.name : null
 
@@ -195,7 +197,7 @@ export default function CoinPage() {
           {poisticName && (
             <div style={{ marginBottom: 8 }}>
               <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: p.textFaint }}>
-                Coin name
+                {t.coinNameLabel}
               </div>
               <p style={{ fontFamily: playfair, fontStyle: 'italic', fontSize: 22, color: p.amber, margin: '2px 0 0', letterSpacing: '0.04em' }}>
                 {poisticName}
@@ -210,7 +212,7 @@ export default function CoinPage() {
                 {formatKm(coin.total_km)}
               </div>
               <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: p.textFaint, marginTop: 5 }}>
-                traveled
+                {t.traveled}
               </div>
             </div>
             <div style={{ width: 1, height: 32, backgroundColor: p.borderMid }} />
@@ -219,7 +221,7 @@ export default function CoinPage() {
                 {keeperCount}
               </div>
               <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: p.textFaint, marginTop: 5 }}>
-                {keeperCount === 1 ? 'keeper' : 'keepers'}
+                {keeperCount === 1 ? t.keeper : t.keepers}
               </div>
             </div>
           </div>
@@ -252,7 +254,7 @@ export default function CoinPage() {
               <CompassDivider />
             </div>
             <p style={{ fontFamily: mono, fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase', color: p.amber, marginBottom: 14 }}>
-              Story so far
+              {t.storySoFar}
             </p>
             <p
               style={{
@@ -277,8 +279,8 @@ export default function CoinPage() {
         {entries.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
             <div style={{ fontSize: 36, marginBottom: 16 }}>🌍</div>
-            <p style={{ fontFamily: playfair, fontStyle: 'italic', fontSize: 18, color: p.text, marginBottom: 4 }}>No stories yet.</p>
-            <p style={{ fontFamily: crimson, fontSize: 15, color: p.textMuted }}>Be the first Keeper.</p>
+            <p style={{ fontFamily: playfair, fontStyle: 'italic', fontSize: 18, color: p.text, marginBottom: 4 }}>{t.noStories}</p>
+            <p style={{ fontFamily: crimson, fontSize: 15, color: p.textMuted }}>{t.beFirst}</p>
           </div>
         ) : (
           <>
@@ -286,7 +288,7 @@ export default function CoinPage() {
               <CompassDivider />
             </div>
             <p style={{ fontFamily: mono, fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: p.textFaint, margin: '12px 0 20px' }}>
-              Keeper log
+              {t.keeperLog}
             </p>
             {entries.map((entry, i) => (
               <EntryCard key={entry.id} entry={entry} index={i} isLast={i === entries.length - 1} />
@@ -297,21 +299,21 @@ export default function CoinPage() {
         {/* ── Waitlist CTA ─────────────────────────────── */}
         <div style={{ marginTop: 40, padding: '24px 20px', border: `2px solid ${p.borderMid}`, outline: `1px solid ${p.border}`, outlineOffset: 4, backgroundColor: p.bgCta, textAlign: 'center' }}>
           <p style={{ fontFamily: playfair, fontStyle: 'italic', fontSize: 20, color: p.text, marginBottom: 6 }}>
-            This coin travels free.
+            {t.ctaHeading}
           </p>
           <p style={{ fontFamily: crimson, fontSize: 16, color: p.textMuted, marginBottom: 20 }}>
-            Get your own coin and start a story that outlives you.
+            {t.ctaBody}
           </p>
 
           {waitlistDone ? (
             <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 16, color: p.amber }}>
-              You're on the list. We'll be in touch.
+              {t.waitlistDone}
             </p>
           ) : (
             <div style={{ display: 'flex', gap: 8 }}>
               <input
                 type="email"
-                placeholder="your@email.com"
+                placeholder={t.emailPlaceholder}
                 value={waitlistEmail}
                 onChange={e => setWaitlistEmail(e.target.value)}
                 style={{
@@ -346,7 +348,7 @@ export default function CoinPage() {
                   flexShrink: 0,
                 }}
               >
-                Join
+                {t.joinBtn}
               </button>
             </div>
           )}
