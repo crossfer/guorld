@@ -133,20 +133,19 @@ export default function CoinPage() {
   const [translatingStory, setTranslatingStory] = useState(false)
 
   async function translateStory(text: string): Promise<string> {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: `Translate this travel story to Spanish. Keep the poetic tone. Return only the translated text, nothing else:\n\n${text}`
-        }]
-      })
-    })
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/translate-story`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ text, language: 'Spanish' }),
+      }
+    )
     const data = await response.json()
-    return data.content[0].text
+    return data.translated ?? text
   }
 
   useEffect(() => {
