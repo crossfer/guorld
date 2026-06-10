@@ -164,26 +164,30 @@ export default function CoinPage() {
     <div className="min-h-screen" style={{ backgroundColor: p.bg, color: p.text }}>
 
       {/* Header */}
-      <header className="px-5 pt-8 pb-6" style={{ borderBottom: `1px solid ${p.borderMid}` }}>
+      <header className="px-5 pt-12 pb-0 text-center">
         <div className="max-w-xl mx-auto">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="text-[11px] font-mono tracking-[0.2em] uppercase" style={{ color: p.amber }}>
-              Coin #{coin.slug}
-            </span>
-            {coin.is_active && (
-              <span
-                className="flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full"
-                style={{ color: '#166534', backgroundColor: '#dcfce7' }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
-                active
-              </span>
-            )}
-          </div>
+          <img
+            src="/logo.png"
+            alt="Güorld Coin"
+            className="mx-auto mb-5"
+            style={{ width: 260, display: 'block' }}
+          />
 
-          <img src="/logo.png" alt="Güorld Coin" className="mb-6" style={{ width: 220, display: 'block' }} />
+          {coin.name && (
+            <p
+              className="mb-6 tracking-widest"
+              style={{
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                fontSize: 22,
+                letterSpacing: '0.08em',
+                color: p.amber,
+              }}
+            >
+              {coin.name}
+            </p>
+          )}
 
-          <div className="flex items-end gap-8">
+          <div className="flex items-end justify-center gap-8 pb-8">
             <div>
               <div className="text-3xl font-bold tracking-tight leading-none" style={{ color: p.text }}>
                 {formatKm(coin.total_km)}
