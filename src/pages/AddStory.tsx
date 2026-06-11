@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { p } from '../lib/theme'
+import { p, grain, playfair, crimson } from '../lib/theme'
 import { useTranslation } from '../lib/i18n'
 
 type GpsStatus = 'idle' | 'loading' | 'done' | 'error'
@@ -51,6 +51,41 @@ export default function AddStory() {
   const [gpsStatus, setGpsStatus] = useState<GpsStatus>('idle')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [handoffLoaded, setHandoffLoaded] = useState(false)
+  const [currentKeeperName, setCurrentKeeperName] = useState<string | null>(null)
+  const [coinPoeticName, setCoinPoeticName] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function loadHandoff() {
+      const { data: coinData } = await supabase
+        .from('coins')
+        .select('id, name')
+        .eq('slug', slug)
+        .single()
+
+      if (!coinData) { setHandoffLoaded(true); return }
+
+      const poetic = coinData.name && !/^Güorld Coin #/i.test(coinData.name)
+        ? coinData.name
+        : null
+      setCoinPoeticName(poetic)
+
+      const { data: ckData } = await supabase
+        .from('coin_keepers')
+        .select('keepers(display_name)')
+        .eq('coin_id', coinData.id)
+        .is('passed_at', null)
+        .maybeSingle()
+
+      const keepers = ckData?.keepers as unknown as { display_name: string | null }[] | { display_name: string | null } | null
+      const name = Array.isArray(keepers)
+        ? (keepers[0]?.display_name ?? null)
+        : (keepers?.display_name ?? null)
+      setCurrentKeeperName(name)
+      setHandoffLoaded(true)
+    }
+    loadHandoff()
+  }, [slug])
 
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -191,6 +226,47 @@ export default function AddStory() {
           </p>
         </div>
       </header>
+
+      {/* Handoff banner */}
+      {handoffLoaded && (
+        <div style={{ maxWidth: 580, margin: '0 auto', padding: '20px 20px 0' }}>
+          <div style={{
+            padding: '24px 24px',
+            backgroundColor: p.bgCard,
+            border: `1px solid ${p.border}`,
+            textAlign: 'center',
+            ...grain,
+          }}>
+            {currentKeeperName ? (
+              <>
+                <p style={{ fontFamily: crimson, fontSize: 19, lineHeight: 1.5, color: p.text, marginBottom: 8 }}>
+                  <span style={{ color: p.amber, fontWeight: 600 }}>{currentKeeperName}</span> is passing you the Güorld Coin.
+                </p>
+                <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 15, color: p.textMuted, margin: 0 }}>
+                  Add your story and become part of{' '}
+                  {coinPoeticName
+                    ? <em style={{ fontFamily: playfair, color: p.amber }}>{coinPoeticName}</em>
+                    : 'this journey'
+                  }.
+                </p>
+              </>
+            ) : (
+              <>
+                <p style={{ fontFamily: crimson, fontSize: 19, lineHeight: 1.5, color: p.text, marginBottom: 8 }}>
+                  You are the first Keeper
+                  {coinPoeticName
+                    ? <> of <em style={{ fontFamily: playfair, color: p.amber }}>{coinPoeticName}</em></>
+                    : ''
+                  }.
+                </p>
+                <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 15, color: p.textMuted, margin: 0 }}>
+                  Add your story and start the journey.
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="max-w-xl mx-auto px-5 pt-7 space-y-6">
 
