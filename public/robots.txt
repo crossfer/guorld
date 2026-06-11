@@ -1,3 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /coin/*/add
+Disallow: /coin/*/pass
+Disallow: /admin
+
 Sitemap: https://guorld.com/sitemap.xml

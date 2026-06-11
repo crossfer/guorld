@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { p } from '../lib/theme'
@@ -31,6 +31,15 @@ export default function AddStory() {
   const writeToken = searchParams.get('token')
 
   const t = useTranslation('addStory')
+
+  useEffect(() => {
+    const meta = document.createElement('meta')
+    meta.name = 'robots'
+    meta.content = 'noindex, nofollow'
+    document.head.appendChild(meta)
+    return () => { document.head.removeChild(meta) }
+  }, [])
+
   const [displayName, setDisplayName] = useState('')
   const [instagram, setInstagram] = useState('')
   const [story, setStory] = useState('')
