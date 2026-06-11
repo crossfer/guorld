@@ -68,7 +68,7 @@ export default function AddStory() {
     if (fileRef.current) fileRef.current.value = ''
   }
 
-  useEffect(() => {
+  function detectLocation() {
     if (!navigator.geolocation) {
       setGpsStatus('error')
       return
@@ -96,7 +96,7 @@ export default function AddStory() {
       () => setGpsStatus('error'),
       { timeout: 10000 }
     )
-  }, [])
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -296,6 +296,17 @@ export default function AddStory() {
         <div>
           <label style={labelStyle}>{t.location}</label>
 
+          {gpsStatus === 'idle' && (
+            <button
+              type="button"
+              onClick={detectLocation}
+              className="w-full rounded-xl px-4 py-3.5 text-sm font-medium flex items-center justify-center gap-2"
+              style={{ backgroundColor: p.amberDot, color: '#FAF5E9', border: 'none' }}
+            >
+              📍 Detect my location
+            </button>
+          )}
+
           {gpsStatus === 'loading' && (
             <div className="flex items-center gap-3 rounded-xl px-4 py-3.5" style={{ ...inputStyle }}>
               <div
@@ -309,19 +320,27 @@ export default function AddStory() {
           {gpsStatus === 'done' && (
             <div className="rounded-xl px-4 py-3.5" style={{ backgroundColor: '#dcfce7', border: '1px solid #86efac' }}>
               <span className="text-sm font-medium" style={{ color: '#166534' }}>
-                📍 {locationName || 'Location detected'}
+                📍 {locationName || 'Location detected'} ✓
               </span>
             </div>
           )}
 
-          {(gpsStatus === 'idle' || gpsStatus === 'error') && (
-            <div className="rounded-xl px-4 py-4 space-y-1" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
+          {gpsStatus === 'error' && (
+            <div className="rounded-xl px-4 py-4 space-y-2" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
               <p className="text-sm font-medium" style={{ color: '#991b1b' }}>
                 Location required — please enable GPS
               </p>
               <p className="text-xs" style={{ color: '#b91c1c' }}>
                 Your location is part of the coin's journey. Please enable GPS to leave your story.
               </p>
+              <button
+                type="button"
+                onClick={detectLocation}
+                className="text-xs font-medium mt-1"
+                style={{ color: '#991b1b', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              >
+                Try again
+              </button>
             </div>
           )}
         </div>
@@ -346,6 +365,11 @@ export default function AddStory() {
           >
             {submitting ? t.submitting : t.submit}
           </button>
+          {lat === null && (
+            <p className="text-xs text-center" style={{ color: p.textFaint }}>
+              Location required to submit
+            </p>
+          )}
           <p className="text-xs text-center" style={{ color: p.textFaint }}>
             {t.keeperForever}
           </p>
