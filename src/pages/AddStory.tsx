@@ -68,7 +68,7 @@ export default function AddStory() {
     if (fileRef.current) fileRef.current.value = ''
   }
 
-  async function detectLocation() {
+  useEffect(() => {
     if (!navigator.geolocation) {
       setGpsStatus('error')
       return
@@ -78,7 +78,6 @@ export default function AddStory() {
       async ({ coords }) => {
         setLat(coords.latitude)
         setLng(coords.longitude)
-        // Reverse geocode via Nominatim (free, no key required)
         try {
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json`,
@@ -90,14 +89,14 @@ export default function AddStory() {
           const country = addr.country ?? ''
           if (city || country) setLocationName([city, country].filter(Boolean).join(', '))
         } catch {
-          // GPS coords saved; user can type location name manually
+          // coords saved; name will be blank
         }
         setGpsStatus('done')
       },
       () => setGpsStatus('error'),
       { timeout: 10000 }
     )
-  }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -297,46 +296,34 @@ export default function AddStory() {
         <div>
           <label style={labelStyle}>{t.location}</label>
 
-          <button
-            type="button"
-            onClick={detectLocation}
-            disabled={gpsStatus === 'loading' || gpsStatus === 'done'}
-            className="w-full rounded-xl px-4 py-3.5 text-sm font-medium flex items-center justify-center gap-2 mb-3 disabled:opacity-60"
-            style={
-              gpsStatus === 'done'
-                ? { backgroundColor: '#dcfce7', border: '1px solid #86efac', color: '#166534' }
-                : { ...inputStyle }
-            }
-          >
-            {gpsStatus === 'loading' && (
+          {gpsStatus === 'loading' && (
+            <div className="flex items-center gap-3 rounded-xl px-4 py-3.5" style={{ ...inputStyle }}>
               <div
                 className="w-4 h-4 rounded-full animate-spin shrink-0"
                 style={{ border: `2px solid ${p.amberDot}`, borderTopColor: 'transparent' }}
               />
-            )}
-            {gpsStatus === 'idle' && '📍'}
-            {gpsStatus === 'error' && '📍'}
-            {gpsStatus === 'done'
-              ? t.locationDetected
-              : gpsStatus === 'loading'
-                ? t.detecting
-                : t.detectLocation}
-          </button>
-
-          {gpsStatus === 'error' && (
-            <p className="text-xs mb-2" style={{ color: p.amber }}>
-              {t.gpsError}
-            </p>
+              <span className="text-sm" style={{ color: p.textMuted }}>Detecting your location…</span>
+            </div>
           )}
 
-          <input
-            type="text"
-            value={locationName}
-            onChange={e => setLocationName(e.target.value)}
-            placeholder={t.cityCountry}
-            className="w-full rounded-xl px-4 py-3.5 text-sm outline-none"
-            style={inputStyle}
-          />
+          {gpsStatus === 'done' && (
+            <div className="rounded-xl px-4 py-3.5" style={{ backgroundColor: '#dcfce7', border: '1px solid #86efac' }}>
+              <span className="text-sm font-medium" style={{ color: '#166534' }}>
+                📍 {locationName || 'Location detected'}
+              </span>
+            </div>
+          )}
+
+          {(gpsStatus === 'idle' || gpsStatus === 'error') && (
+            <div className="rounded-xl px-4 py-4 space-y-1" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
+              <p className="text-sm font-medium" style={{ color: '#991b1b' }}>
+                Location required — please enable GPS
+              </p>
+              <p className="text-xs" style={{ color: '#b91c1c' }}>
+                Your location is part of the coin's journey. Please enable GPS to leave your story.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Error */}
@@ -353,7 +340,7 @@ export default function AddStory() {
         <div className="pt-2 space-y-3">
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || lat === null}
             className="w-full rounded-full py-4 text-sm font-bold tracking-wide disabled:opacity-60"
             style={{ backgroundColor: p.amberDot, color: '#fff' }}
           >
