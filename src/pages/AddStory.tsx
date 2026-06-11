@@ -87,7 +87,8 @@ export default function AddStory() {
     loadHandoff()
   }, [slug])
 
-  const fileRef = useRef<HTMLInputElement>(null)
+  const cameraRef  = useRef<HTMLInputElement>(null)
+  const galleryRef = useRef<HTMLInputElement>(null)
 
   function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -100,7 +101,8 @@ export default function AddStory() {
     setPhoto(null)
     if (photoPreview) URL.revokeObjectURL(photoPreview)
     setPhotoPreview(null)
-    if (fileRef.current) fileRef.current.value = ''
+    if (cameraRef.current)  cameraRef.current.value  = ''
+    if (galleryRef.current) galleryRef.current.value = ''
   }
 
   function detectLocation() {
@@ -266,13 +268,9 @@ export default function AddStory() {
 
         {/* Photo */}
         <div>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            onChange={handlePhoto}
-            className="hidden"
-          />
+          <input ref={cameraRef}  type="file" accept="image/*" capture="environment" onChange={handlePhoto} className="hidden" />
+          <input ref={galleryRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+
           {photoPreview ? (
             <div className="relative">
               <img
@@ -290,16 +288,26 @@ export default function AddStory() {
               </button>
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              className="w-full aspect-[4/3] rounded-xl flex flex-col items-center justify-center gap-2"
-              style={{ backgroundColor: p.bgCard, border: `2px dashed ${p.border}` }}
-            >
-              <span className="text-2xl">📷</span>
-              <span className="text-sm" style={{ color: p.textMuted }}>Add a photo</span>
-              <span className="text-[11px]" style={{ color: p.textFaint }}>optional · JPEG, PNG or WebP · max 5 MB</span>
-            </button>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => cameraRef.current?.click()}
+                className="flex-1 rounded-xl py-4 flex flex-col items-center justify-center gap-1.5"
+                style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}` }}
+              >
+                <span className="text-2xl">📷</span>
+                <span className="text-xs font-medium" style={{ color: p.textMuted }}>Take a photo</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => galleryRef.current?.click()}
+                className="flex-1 rounded-xl py-4 flex flex-col items-center justify-center gap-1.5"
+                style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}` }}
+              >
+                <span className="text-2xl">🖼️</span>
+                <span className="text-xs font-medium" style={{ color: p.textMuted }}>Choose from gallery</span>
+              </button>
+            </div>
           )}
         </div>
 
