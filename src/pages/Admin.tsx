@@ -116,13 +116,21 @@ export default function Admin() {
       // Non-fatal — coin gets created without a name
     }
 
-    const { error } = await supabase.from('coins').insert({
-      slug: cleanSlug,
-      name: coinName,
-    })
+    const res = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-coin`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ slug: cleanSlug, name: coinName }),
+      }
+    )
+    const data = await res.json()
 
-    if (error) {
-      setCreateError(error.message)
+    if (!res.ok || data.error) {
+      setCreateError(data.error ?? 'Failed to create coin')
       setCreating(false)
       return
     }
