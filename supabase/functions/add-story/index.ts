@@ -140,7 +140,7 @@ async function notifyPreviousKeepers(
       method: 'POST',
       headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'Güorld Coin <coin@guorld.com>',
+        from: 'Güorld Coin <hello@guorld.com>',
         to,
         subject: 'The coin found a new Keeper 🪙',
         text: body,
