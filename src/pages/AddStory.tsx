@@ -16,12 +16,12 @@ const inputStyle = {
 
 const labelStyle = {
   display: 'block',
-  fontSize: '11px',
+  fontSize: '14px',
   fontWeight: 500,
   textTransform: 'uppercase' as const,
   letterSpacing: '0.1em',
   color: p.textFaint,
-  marginBottom: '8px',
+  marginBottom: '2px',
 }
 
 export default function AddStory() {
@@ -269,7 +269,7 @@ export default function AddStory() {
           <input
             ref={fileRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/*"
             onChange={handlePhoto}
             className="hidden"
           />
