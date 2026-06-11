@@ -210,24 +210,17 @@ export default function AddStory() {
     <div className="min-h-screen pb-12" style={{ backgroundColor: p.bg, color: p.text }}>
 
       {/* Header */}
-      <header className="px-5 pt-7 pb-5" style={{ borderBottom: `1px solid ${p.borderMid}` }}>
+      <header className="px-5 pt-3 pb-5" style={{ borderBottom: `1px solid ${p.borderMid}` }}>
         <div className="max-w-xl mx-auto">
-          <Link
-            to={`/coin/${slug}`}
-            className="text-xs mb-4 inline-block"
-            style={{ color: p.amber }}
-          >
-            ← Coin #{slug}
-          </Link>
-          <img src="/logo.png" alt="Güorld Coin" style={{ width: 220, display: 'block', marginBottom: 0 }} />
+          <img src="/logo.png" alt="Güorld Coin" style={{ width: 220, display: 'block', margin: '0 auto', marginBottom: -50 }} />
         </div>
       </header>
 
       {/* Handoff banner */}
       {handoffLoaded && (
-        <div style={{ maxWidth: 580, margin: '0 auto', padding: '20px 20px 0' }}>
+        <div style={{ maxWidth: 580, margin: '0 auto', padding: '10px 10px 0' }}>
           <div style={{
-            padding: '24px 24px',
+            padding: '10px 10px',
             backgroundColor: p.bgCard,
             border: `1px solid ${p.border}`,
             textAlign: 'center',
