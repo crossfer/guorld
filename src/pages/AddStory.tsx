@@ -231,7 +231,7 @@ export default function AddStory() {
                 <p style={{ fontFamily: crimson, fontSize: 19, lineHeight: 1.5, color: p.text, marginBottom: 8 }}>
                   <span style={{ color: p.amber, fontWeight: 600 }}>{currentKeeperName}</span>{' '}{t.handoffPassing}
                 </p>
-                <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 15, color: p.textMuted, margin: 0 }}>
+                <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 17, color: p.textMuted, margin: 0 }}>
                   {t.handoffBecomePartOf}{' '}
                   {coinPoeticName
                     ? <em style={{ fontFamily: playfair, color: p.amber }}>{coinPoeticName}</em>
@@ -307,7 +307,7 @@ export default function AddStory() {
               {story.length}/{STORY_MAX}
             </span>
           </div>
-          <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 13, color: p.amber, opacity: 0.75, textAlign: 'center', margin: '0 0 8px' }}>
+          <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 19, color: p.amber, opacity: 0.75, textAlign: 'center', margin: '0 0 8px' }}>
             Carve your story into history. Be part of something bigger.
           </p>
           <textarea
