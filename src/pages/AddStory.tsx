@@ -266,51 +266,6 @@ export default function AddStory() {
 
       <form onSubmit={handleSubmit} className="max-w-xl mx-auto px-5 pt-7 space-y-6">
 
-        {/* Photo */}
-        <div>
-          <input ref={cameraRef}  type="file" accept="image/*" capture="environment" onChange={handlePhoto} className="hidden" />
-          <input ref={galleryRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
-
-          {photoPreview ? (
-            <div className="relative">
-              <img
-                src={photoPreview}
-                alt="Preview"
-                className="w-full aspect-[4/3] object-cover rounded-xl"
-              />
-              <button
-                type="button"
-                onClick={removePhoto}
-                className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                style={{ backgroundColor: 'rgba(28,25,23,0.65)', color: '#fff' }}
-              >
-                ✕
-              </button>
-            </div>
-          ) : (
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => cameraRef.current?.click()}
-                className="flex-1 rounded-xl py-4 flex flex-col items-center justify-center gap-1.5"
-                style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}` }}
-              >
-                <span className="text-2xl">📷</span>
-                <span className="text-xs font-medium" style={{ color: p.textMuted }}>Take a photo</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => galleryRef.current?.click()}
-                className="flex-1 rounded-xl py-4 flex flex-col items-center justify-center gap-1.5"
-                style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}` }}
-              >
-                <span className="text-2xl">🖼️</span>
-                <span className="text-xs font-medium" style={{ color: p.textMuted }}>Choose from gallery</span>
-              </button>
-            </div>
-          )}
-        </div>
-
         {/* Name */}
         <div>
           <label style={labelStyle}>{t.yourName}</label>
@@ -418,6 +373,52 @@ export default function AddStory() {
                 style={{ color: '#991b1b', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
               >
                 Try again
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Photo */}
+        <div>
+          <label style={labelStyle}>{t.photoLabel}</label>
+          <input ref={cameraRef}  type="file" accept="image/*" capture="environment" onChange={handlePhoto} className="hidden" />
+          <input ref={galleryRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+
+          {photoPreview ? (
+            <div className="relative">
+              <img
+                src={photoPreview}
+                alt="Preview"
+                className="w-full aspect-[4/3] object-cover rounded-xl"
+              />
+              <button
+                type="button"
+                onClick={removePhoto}
+                className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+                style={{ backgroundColor: 'rgba(28,25,23,0.65)', color: '#fff' }}
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => cameraRef.current?.click()}
+                className="flex-1 rounded-xl py-4 flex flex-col items-center justify-center gap-1.5"
+                style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}` }}
+              >
+                <span className="text-2xl">📷</span>
+                <span className="text-xs font-medium" style={{ color: p.textMuted }}>Take a photo</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => galleryRef.current?.click()}
+                className="flex-1 rounded-xl py-4 flex flex-col items-center justify-center gap-1.5"
+                style={{ backgroundColor: p.bgCard, border: `1px solid ${p.border}` }}
+              >
+                <span className="text-2xl">🖼️</span>
+                <span className="text-xs font-medium" style={{ color: p.textMuted }}>Choose from gallery</span>
               </button>
             </div>
           )}
