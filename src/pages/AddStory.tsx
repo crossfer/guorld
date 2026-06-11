@@ -217,13 +217,7 @@ export default function AddStory() {
           >
             ← Coin #{slug}
           </Link>
-          <img src="/logo.png" alt="Güorld Coin" style={{ width: 220, display: 'block', marginBottom: 12 }} />
-          <h1 className="text-xl font-semibold tracking-tight" style={{ color: p.text }}>
-            {t.heading}
-          </h1>
-          <p className="text-sm mt-1" style={{ color: p.textMuted }}>
-            {t.subheading}
-          </p>
+          <img src="/logo.png" alt="Güorld Coin" style={{ width: 220, display: 'block', marginBottom: 0 }} />
         </div>
       </header>
 
@@ -240,27 +234,27 @@ export default function AddStory() {
             {currentKeeperName ? (
               <>
                 <p style={{ fontFamily: crimson, fontSize: 19, lineHeight: 1.5, color: p.text, marginBottom: 8 }}>
-                  <span style={{ color: p.amber, fontWeight: 600 }}>{currentKeeperName}</span> is passing you the Güorld Coin.
+                  <span style={{ color: p.amber, fontWeight: 600 }}>{currentKeeperName}</span>{' '}{t.handoffPassing}
                 </p>
                 <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 15, color: p.textMuted, margin: 0 }}>
-                  Add your story and become part of{' '}
+                  {t.handoffBecomePartOf}{' '}
                   {coinPoeticName
                     ? <em style={{ fontFamily: playfair, color: p.amber }}>{coinPoeticName}</em>
-                    : 'this journey'
+                    : t.handoffThisJourney
                   }.
                 </p>
               </>
             ) : (
               <>
                 <p style={{ fontFamily: crimson, fontSize: 19, lineHeight: 1.5, color: p.text, marginBottom: 8 }}>
-                  You are the first Keeper
+                  {t.handoffFirstKeeper}
                   {coinPoeticName
-                    ? <> of <em style={{ fontFamily: playfair, color: p.amber }}>{coinPoeticName}</em></>
+                    ? <> {t.handoffOf} <em style={{ fontFamily: playfair, color: p.amber }}>{coinPoeticName}</em></>
                     : ''
                   }.
                 </p>
                 <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 15, color: p.textMuted, margin: 0 }}>
-                  Add your story and start the journey.
+                  {t.handoffStartJourney}
                 </p>
               </>
             )}
