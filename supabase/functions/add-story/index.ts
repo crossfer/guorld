@@ -97,6 +97,58 @@ Return only the translated text, no explanations or prefixes.`,
   }
 }
 
+async function notifyPreviousKeepers(
+  supabase: ReturnType<typeof createClient>,
+  coinId: string,
+  coinSlug: string,
+  coinName: string | null,
+  newKeeperId: string,
+  newKeeperName: string,
+  newKeeperInstagram: string | null,
+  locationName: string | null,
+) {
+  const resendKey = Deno.env.get('RESEND_API_KEY')
+  if (!resendKey) return
+
+  const { data: rows } = await supabase
+    .from('coin_keepers')
+    .select('keepers(id, email)')
+    .eq('coin_id', coinId)
+    .neq('keeper_id', newKeeperId)
+
+  if (!rows?.length) return
+
+  type KeeperRow = { keepers: { id: string; email: string | null } | null }
+  const seen = new Set<string>()
+  const emails: string[] = []
+  for (const row of rows as KeeperRow[]) {
+    const email = row.keepers?.email
+    if (email && !seen.has(email)) { seen.add(email); emails.push(email) }
+  }
+  if (!emails.length) return
+
+  const coinDisplay = coinName && !/^Güorld Coin #/i.test(coinName) ? coinName : `Coin #${coinSlug}`
+  const keeperLine  = newKeeperInstagram ? `${newKeeperName} (@${newKeeperInstagram})` : newKeeperName
+  const locationLine = locationName ? ` in ${locationName}` : ''
+  const body =
+    `${coinDisplay} has a new Keeper.\n\n` +
+    `${keeperLine} just received the coin${locationLine}.\n\n` +
+    `See the journey: https://guorld.com/coin/${coinSlug}`
+
+  await Promise.all(emails.map(to =>
+    fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'Güorld Coin <coin@guorld.com>',
+        to,
+        subject: 'The coin found a new Keeper 🪙',
+        text: body,
+      }),
+    }).catch((err: Error) => console.error('Email send failed:', err))
+  ))
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: CORS })
@@ -124,7 +176,7 @@ Deno.serve(async (req: Request) => {
     // 1. Find coin and validate write token in one query
     const { data: coin, error: coinError } = await supabase
       .from('coins')
-      .select('id, slug, total_km, is_active, write_token')
+      .select('id, slug, name, total_km, is_active, write_token')
       .eq('slug', slug)
       .single()
 
@@ -251,7 +303,15 @@ Deno.serve(async (req: Request) => {
       received_at: now.toISOString(),
     })
 
-    // 8. Fire-and-forget: translate + generate Story So Far
+    // 8. Fire-and-forget: notify previous keepers
+    notifyPreviousKeepers(
+      supabase, coin.id, coin.slug, coin.name ?? null,
+      keeperId, display_name.trim(),
+      instagram?.trim().replace(/^@/, '') || null,
+      location_name?.trim() ?? null,
+    ).catch((err: Error) => console.error('Notification failed (non-fatal):', err))
+
+    // 9. Fire-and-forget: translate + generate Story So Far
     generateAIContent(supabase, coin.id, newEntry.id, coin.total_km + newKm).catch((err) =>
       console.error('AI generation failed (non-fatal):', err),
     )

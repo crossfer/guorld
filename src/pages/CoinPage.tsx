@@ -306,6 +306,64 @@ export default function CoinPage() {
         </section>
       )}
 
+      {/* ── Keepers roster ───────────────────────────────── */}
+      {entries.length > 0 && (
+        <section style={{ padding: '0 0 4px' }}>
+          <div style={{ maxWidth: 580, margin: '0 auto', padding: '0 20px 10px' }}>
+            <CompassDivider />
+            <p style={{ fontFamily: mono, fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: p.textFaint, margin: '12px 0 14px' }}>
+              {t.theKeepers}
+            </p>
+          </div>
+          <div style={{ overflowX: 'auto', paddingLeft: 20, paddingRight: 20, paddingBottom: 12 }}>
+            <div style={{ display: 'flex', gap: 10, minWidth: 'max-content' }}>
+              {entries.map((entry, i) => {
+                const ig = entry.keeper?.instagram?.replace(/^@/, '')
+                return (
+                  <div
+                    key={entry.id}
+                    style={{
+                      width: 150,
+                      flexShrink: 0,
+                      padding: '12px 14px',
+                      backgroundColor: p.bgCard,
+                      border: `1px solid ${p.border}`,
+                    }}
+                  >
+                    <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '0.15em', color: p.amber, marginBottom: 6 }}>
+                      #{String(i + 1).padStart(2, '0')}
+                    </div>
+                    <div style={{ fontFamily: crimson, fontSize: 14, fontWeight: 600, color: p.text, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {entry.keeper?.display_name ?? 'Anonymous'}
+                    </div>
+                    {ig && (
+                      <a
+                        href={`https://instagram.com/${ig}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontFamily: mono, fontSize: 9, color: p.amber, textDecoration: 'none', display: 'block', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                      >
+                        @{ig}
+                      </a>
+                    )}
+                    {entry.location_name && (
+                      <div style={{ fontFamily: mono, fontSize: 9, color: p.textMuted, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {entry.location_name}
+                      </div>
+                    )}
+                    {entry.days_held != null && (
+                      <div style={{ fontFamily: mono, fontSize: 9, color: p.textFaint }}>
+                        {entry.days_held}d held
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── Journey ──────────────────────────────────────── */}
       <main style={{ maxWidth: 580, margin: '0 auto', padding: '24px 20px' }}>
         {entries.length === 0 ? (
