@@ -298,7 +298,7 @@ export default function AddStory() {
 
         {/* Story */}
         <div>
-          <div className="flex items-baseline justify-between mb-2">
+          <div className="flex items-baseline justify-between mb-1">
             <label style={{ ...labelStyle, marginBottom: 0 }}>{t.yourStory}</label>
             <span
               className="text-[11px]"
@@ -307,6 +307,9 @@ export default function AddStory() {
               {story.length}/{STORY_MAX}
             </span>
           </div>
+          <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 13, color: p.amber, opacity: 0.75, textAlign: 'center', margin: '0 0 8px' }}>
+            Carve your story into history. Be part of something bigger.
+          </p>
           <textarea
             required
             value={story}
