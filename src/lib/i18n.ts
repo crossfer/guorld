@@ -61,7 +61,7 @@ const translations = {
       handoffFirstKeeper: 'You are the first Keeper',
       handoffStartJourney:'Add your story and start the journey.',
       handoffThisJourney: 'this journey',
-      carveStory:         'Carve your story into history. Be part of something bigger.',
+      carveStory:         'Carve your story and be part of something bigger, forever.',
     },
   },
 
@@ -125,7 +125,7 @@ const translations = {
       handoffFirstKeeper: 'Eres el primer Portador',
       handoffStartJourney:'Añade tu historia e inicia el viaje.',
       handoffThisJourney: 'este viaje',
-      carveStory:         'Graba tu historia para siempre. Sé parte de algo más grande.',
+      carveStory:         'Graba tu historia y sé parte de algo más grande, para siempre.',
     },
   },
 }

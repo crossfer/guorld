@@ -431,7 +431,7 @@ export default function AddStory() {
         )}
 
         {/* Submit */}
-        <div className="pt-2 space-y-3">
+        <div className="pt-2">
           <button
             type="submit"
             disabled={submitting || lat === null}
@@ -440,14 +440,6 @@ export default function AddStory() {
           >
             {submitting ? t.submitting : t.submit}
           </button>
-          {lat === null && (
-            <p className="text-xs text-center" style={{ color: p.textFaint }}>
-              Location required to submit
-            </p>
-          )}
-          <p className="text-xs text-center" style={{ color: p.textFaint }}>
-            {t.keeperForever}
-          </p>
         </div>
 
       </form>
