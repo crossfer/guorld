@@ -308,7 +308,7 @@ export default function AddStory() {
             </span>
           </div>
           <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 19, color: p.amber, opacity: 0.75, textAlign: 'center', margin: '0 0 8px' }}>
-            Carve your story into history. Be part of something bigger.
+            {t.carveStory}
           </p>
           <textarea
             required
