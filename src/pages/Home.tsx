@@ -262,7 +262,11 @@ export default function Home() {
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    <span style={{ fontFamily: mono, fontSize: 10, color: p.amber }}>#{entry.coin?.slug}</span>
+                    <span style={{ fontFamily: mono, fontSize: 10, color: p.amber }}>
+                      {entry.coin && entry.coin.name && !/^Güorld Coin #/i.test(entry.coin.name)
+                        ? entry.coin.name
+                        : `#${entry.coin?.slug}`}
+                    </span>
                     <span style={{ fontFamily: mono, fontSize: 10, color: p.textFaint }}>{timeAgo(entry.created_at)}</span>
                   </div>
                 </div>
