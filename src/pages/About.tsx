@@ -42,22 +42,22 @@ export default function About() {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: p.bg, ...grain, color: p.text }}>
 
-      <main style={{ maxWidth: 660, margin: '0 auto', padding: '48px 24px 72px' }}>
+      <main style={{ maxWidth: 660, margin: '0 auto', padding: '18px 24px 42px' }}>
 
         {/* Title first */}
         <h1 style={{
           fontFamily: playfair,
-          fontSize: 42,
+          fontSize: 20,
           fontWeight: 700,
-          color: p.text,
+          color: p.amber,
           textAlign: 'center',
-          marginBottom: 24,
+          marginBottom: 4,
         }}>
-          Welcome to Güorld
+          Welcome to
         </h1>
 
         {/* Logo below the title */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <div style={{ textAlign: 'center', marginBottom: 2 }}>
           <Link to="/">
             <img src="/logo.png" alt="Güorld Coin" style={{ width: 200, display: 'inline-block' }} />
           </Link>
