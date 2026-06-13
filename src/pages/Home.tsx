@@ -292,6 +292,7 @@ export default function Home() {
       </section>
 
       {/* ── Waitlist CTA ─────────────────────────────────── */}
+
       <section style={{ maxWidth: 580, margin: '0 auto', padding: '20px 20px 48px' }}>
         <div style={{ padding: '28px 24px', border: `2px solid ${p.borderMid}`, outline: `1px solid ${p.border}`, outlineOffset: 4, backgroundColor: p.bgCta, textAlign: 'center' }}>
           <p style={{ fontFamily: playfair, fontSize: 22, fontStyle: 'italic', color: p.text, marginBottom: 6 }}>
@@ -353,6 +354,14 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* ── Footer ───────────────────────────────────────── */}
+      <footer style={{ textAlign: 'center', padding: '16px 20px 32px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 20 }}>
+          <Link to="/privacy" style={{ fontFamily: mono, fontSize: 11, color: p.textFaint, letterSpacing: '0.1em', textDecoration: 'none' }}>Privacy</Link>
+          <Link to="/terms" style={{ fontFamily: mono, fontSize: 11, color: p.textFaint, letterSpacing: '0.1em', textDecoration: 'none' }}>Terms</Link>
+        </div>
+      </footer>
 
     </div>
   )
