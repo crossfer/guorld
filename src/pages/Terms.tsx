@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { p, grain, playfair, crimson, mono } from '../lib/theme'
+import { useTranslation } from '../lib/i18n'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -15,6 +16,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export default function Terms() {
+  const t = useTranslation('terms')
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: p.bg, ...grain, color: p.text }}>
 
@@ -26,56 +29,38 @@ export default function Terms() {
 
       <main style={{ maxWidth: 620, margin: '0 auto', padding: '36px 24px 64px' }}>
         <h1 style={{ fontFamily: playfair, fontSize: 30, fontWeight: 700, fontStyle: 'italic', color: p.text, marginBottom: 6 }}>
-          Terms of Use
+          {t.title}
         </h1>
         <p style={{ fontFamily: mono, fontSize: 11, letterSpacing: '0.15em', color: p.textFaint, textTransform: 'uppercase', marginBottom: 36 }}>
-          Last updated: June 2025
+          {t.lastUpdated}
         </p>
 
-        <Section title="Content license">
-          <p>
-            By submitting a story, photo, or any content to Güorld Coin, you grant Güorld Coin a perpetual,
-            irrevocable, worldwide, royalty-free license to display, reproduce, and share that content
-            publicly as part of the coin's journey record. This includes display on the website, social media,
-            and any other promotional materials.
-          </p>
-          <p style={{ marginTop: 10 }}>
-            You retain ownership of your content. You represent that you have the right to submit it.
-          </p>
+        <Section title={t.s1Title}>
+          <p>{t.s1Body1}</p>
+          <p style={{ marginTop: 10 }}>{t.s1Body2}</p>
         </Section>
 
-        <Section title="Content standards">
-          <p>Stories and photos must be:</p>
+        <Section title={t.s2Title}>
+          <p>{t.s2Intro}</p>
           <ul style={{ paddingLeft: 20, marginTop: 8 }}>
-            <li>Original — created by you or shared with permission</li>
-            <li>Inoffensive — no hate speech, explicit material, or harassment</li>
-            <li>Honest — genuine accounts of your experience with the coin</li>
+            <li>{t.s2Item1}</li>
+            <li>{t.s2Item2}</li>
+            <li>{t.s2Item3}</li>
           </ul>
-          <p style={{ marginTop: 10 }}>
-            Güorld Coin reserves the right to remove any content that violates these standards,
-            without prior notice.
-          </p>
+          <p style={{ marginTop: 10 }}>{t.s2Footer}</p>
         </Section>
 
-        <Section title="Location data">
-          <p>
-            By tapping the coin and submitting a story, you consent to your GPS coordinates being
-            recorded and displayed publicly as part of the coin's route on the map. This location
-            is permanent and visible to all visitors.
-          </p>
+        <Section title={t.s3Title}>
+          <p>{t.s3Body}</p>
         </Section>
 
-        <Section title="Service">
-          <p>
-            Güorld Coin is provided as-is, without warranties of any kind. We do not guarantee
-            uninterrupted availability. We reserve the right to modify or discontinue any part of
-            the service at any time.
-          </p>
+        <Section title={t.s4Title}>
+          <p>{t.s4Body}</p>
         </Section>
 
-        <Section title="Contact">
+        <Section title={t.s5Title}>
           <p>
-            For any questions about these terms, write to us at{' '}
+            {t.s5Body}{' '}
             <a href="mailto:hello@guorld.com" style={{ color: p.amber }}>hello@guorld.com</a>.
           </p>
         </Section>
