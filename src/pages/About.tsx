@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 import { p, grain, playfair, crimson, mono } from '../lib/theme'
 
 const body: React.CSSProperties = {
@@ -22,28 +24,44 @@ const punchy: React.CSSProperties = {
 }
 
 export default function About() {
+  const [email, setEmail] = useState('')
+  const [waitlistState, setWaitlistState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+
+  async function handleWaitlist(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.trim()) return
+    setWaitlistState('loading')
+    const { error } = await supabase.from('waitlist').insert({ email: email.trim() })
+    if (error) {
+      setWaitlistState(error.code === '23505' ? 'done' : 'error')
+    } else {
+      setWaitlistState('done')
+    }
+  }
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: p.bg, ...grain, color: p.text }}>
 
-      <header style={{ textAlign: 'center', padding: '28px 20px 8px' }}>
-        <Link to="/">
-          <img src="/logo.png" alt="Güorld Coin" style={{ width: 210, display: 'inline-block' }} />
-        </Link>
-      </header>
+      <main style={{ maxWidth: 660, margin: '0 auto', padding: '48px 24px 72px' }}>
 
-      <main style={{ maxWidth: 660, margin: '0 auto', padding: '40px 24px 72px' }}>
-
-        {/* Title */}
+        {/* Title first */}
         <h1 style={{
           fontFamily: playfair,
           fontSize: 42,
           fontWeight: 700,
           color: p.text,
           textAlign: 'center',
-          marginBottom: 28,
+          marginBottom: 24,
         }}>
           Welcome to Güorld
         </h1>
+
+        {/* Logo below the title */}
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <Link to="/">
+            <img src="/logo.png" alt="Güorld Coin" style={{ width: 200, display: 'inline-block' }} />
+          </Link>
+        </div>
 
         {/* Opening line */}
         <p style={{
@@ -69,7 +87,6 @@ export default function About() {
 
         <p style={body}>Güorld was born from that idea.</p>
 
-        {/* Divider */}
         <div style={{ textAlign: 'center', color: p.amber, opacity: 0.4, fontSize: 18, margin: '20px 0' }}>✦</div>
 
         <p style={body}>Every Güorld coin is more than a token.</p>
@@ -84,7 +101,6 @@ export default function About() {
 
         <p style={{ ...punchy, marginBottom: 32 }}>It was created to move.</p>
 
-        {/* Divider */}
         <div style={{ textAlign: 'center', color: p.amber, opacity: 0.4, fontSize: 18, margin: '8px 0 28px' }}>✦</div>
 
         <p style={body}>Each person who receives a Güorld becomes a Keeper.</p>
@@ -102,7 +118,6 @@ export default function About() {
 
         <p style={{ ...body, marginTop: 8 }}>And with every hand it touches, the circle grows.</p>
 
-        {/* Divider */}
         <div style={{ textAlign: 'center', color: p.amber, opacity: 0.4, fontSize: 18, margin: '20px 0' }}>✦</div>
 
         <p style={punchy}>Different languages.</p>
@@ -114,10 +129,9 @@ export default function About() {
         <p style={body}>And that meaning is created not by what we keep…</p>
         <p style={{ ...punchy, fontSize: 24, marginBottom: 40 }}>But by what we pass on.</p>
 
-        {/* Divider */}
         <div style={{ textAlign: 'center', color: p.amber, opacity: 0.4, fontSize: 18, margin: '0 0 36px' }}>✦</div>
 
-        {/* Closing CTA */}
+        {/* Closing lines */}
         <p style={{
           fontFamily: crimson,
           fontSize: 26,
@@ -129,7 +143,6 @@ export default function About() {
           Where will your journey begin?
         </p>
 
-        {/* Tap. Share. Travel. */}
         <p style={{
           fontFamily: mono,
           fontSize: 15,
@@ -142,28 +155,87 @@ export default function About() {
           Tap.&nbsp;&nbsp;Share.&nbsp;&nbsp;Travel.
         </p>
 
-        <p style={{ ...body, marginBottom: 40 }}>And become a Keeper.</p>
+        <p style={{ ...body, marginBottom: 48 }}>And become a Keeper.</p>
 
-        {/* Button */}
-        <div style={{ textAlign: 'center' }}>
-          <Link
-            to="/"
-            style={{
-              display: 'inline-block',
-              padding: '14px 36px',
-              backgroundColor: p.amberDot,
-              color: '#FAF5E9',
-              fontFamily: mono,
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-              borderRadius: 9999,
-            }}
-          >
-            Explore the journey
-          </Link>
+        {/* CTA card */}
+        <div style={{
+          padding: '32px 24px',
+          border: `2px solid ${p.borderMid}`,
+          outline: `1px solid ${p.border}`,
+          outlineOffset: 4,
+          backgroundColor: p.bgCta,
+          textAlign: 'center',
+          maxWidth: 520,
+          margin: '0 auto',
+        }}>
+          {/* Already have a coin */}
+          <p style={{ fontFamily: crimson, fontSize: 18, color: p.textMuted, marginBottom: 20 }}>
+            Already have a coin?{' '}
+            <span style={{ color: p.text, fontStyle: 'italic' }}>Tap it and begin.</span>
+          </p>
+
+          {/* Divider */}
+          <div style={{ fontFamily: mono, fontSize: 13, color: p.textFaint, letterSpacing: '0.2em', marginBottom: 20 }}>
+            · · ·
+          </div>
+
+          {/* Waitlist */}
+          <p style={{ fontFamily: playfair, fontStyle: 'italic', fontSize: 19, color: p.text, marginBottom: 16 }}>
+            Don't have one yet?
+          </p>
+
+          {waitlistState === 'done' ? (
+            <p style={{ fontFamily: crimson, fontStyle: 'italic', fontSize: 17, color: p.amber }}>
+              You're on the list. We'll be in touch.
+            </p>
+          ) : (
+            <form onSubmit={handleWaitlist} style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={e => { setEmail(e.target.value); if (waitlistState === 'error') setWaitlistState('idle') }}
+                placeholder="your@email.com"
+                style={{
+                  flex: 1,
+                  padding: '11px 14px',
+                  fontSize: 15,
+                  fontFamily: crimson,
+                  outline: 'none',
+                  backgroundColor: p.bgCard,
+                  border: `1px solid ${p.border}`,
+                  color: p.text,
+                  minWidth: 0,
+                }}
+              />
+              <button
+                type="submit"
+                disabled={waitlistState === 'loading'}
+                style={{
+                  padding: '11px 18px',
+                  fontSize: 12,
+                  fontFamily: mono,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                  backgroundColor: p.amberDot,
+                  color: '#FAF5E9',
+                  cursor: 'pointer',
+                  border: 'none',
+                  flexShrink: 0,
+                  opacity: waitlistState === 'loading' ? 0.6 : 1,
+                }}
+              >
+                {waitlistState === 'loading' ? '…' : 'Join the waitlist'}
+              </button>
+            </form>
+          )}
+
+          {waitlistState === 'error' && (
+            <p style={{ fontFamily: mono, fontSize: 11, color: '#8B1A1A', marginTop: 8 }}>
+              Something went wrong. Try again.
+            </p>
+          )}
         </div>
 
       </main>
