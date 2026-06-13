@@ -443,7 +443,7 @@ export default function AddStory() {
         </div>
 
         <div className="pt-4 pb-2 text-center">
-          <Link to="/about" style={{ fontFamily: crimson, fontSize: 14, color: p.textFaint, textDecoration: 'none' }}>
+          <Link to="/about" style={{ fontFamily: crimson, fontSize: 15, color: p.textFaint, textDecoration: 'none' }}>
             {t.learnAbout}
           </Link>
         </div>
