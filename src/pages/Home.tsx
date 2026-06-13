@@ -358,6 +358,7 @@ export default function Home() {
       {/* ── Footer ───────────────────────────────────────── */}
       <footer style={{ textAlign: 'center', padding: '16px 20px 32px' }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 20 }}>
+          <Link to="/about" style={{ fontFamily: mono, fontSize: 11, color: p.textFaint, letterSpacing: '0.1em', textDecoration: 'none' }}>About</Link>
           <Link to="/privacy" style={{ fontFamily: mono, fontSize: 11, color: p.textFaint, letterSpacing: '0.1em', textDecoration: 'none' }}>Privacy</Link>
           <Link to="/terms" style={{ fontFamily: mono, fontSize: 11, color: p.textFaint, letterSpacing: '0.1em', textDecoration: 'none' }}>Terms</Link>
         </div>
