@@ -442,6 +442,12 @@ export default function AddStory() {
           </button>
         </div>
 
+        <div className="pt-4 pb-2 text-center">
+          <Link to="/about" style={{ fontFamily: crimson, fontSize: 14, color: p.textFaint, textDecoration: 'none' }}>
+            {t.learnAbout}
+          </Link>
+        </div>
+
       </form>
     </div>
   )

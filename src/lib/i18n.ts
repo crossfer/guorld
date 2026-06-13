@@ -62,6 +62,7 @@ const translations = {
       handoffStartJourney:'Add your story and start the journey.',
       handoffThisJourney: 'this journey',
       carveStory:         'Carve your story and be part of something bigger, forever.',
+      learnAbout:         'New to Güorld? Learn about the journey →',
     },
     about: {
       welcomeTo:         'Welcome to',
@@ -205,6 +206,7 @@ const translations = {
       handoffStartJourney:'Añade tu historia e inicia el viaje.',
       handoffThisJourney: 'este viaje',
       carveStory:         'Graba tu historia y sé parte de algo más grande, para siempre.',
+      learnAbout:         '¿Nuevo en Güorld? Conoce el proyecto →',
     },
     about: {
       welcomeTo:         'Bienvenido a',
