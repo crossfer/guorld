@@ -6,7 +6,7 @@ import { useTranslation } from '../lib/i18n'
 
 type GpsStatus = 'idle' | 'loading' | 'done' | 'error'
 
-const STORY_MAX = 500
+const STORY_MAX = 1000
 
 const inputStyle = {
   backgroundColor: p.bgCard,
